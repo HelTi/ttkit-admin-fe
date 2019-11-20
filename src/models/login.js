@@ -1,6 +1,6 @@
 import { routerRedux } from 'dva/router';
 import { stringify } from 'querystring';
-import { fakeAccountLogin, getFakeCaptcha } from '@/services/login';
+import { userLogin, getFakeCaptcha } from '@/services/login';
 import { setAuthority } from '@/utils/authority';
 import { getPageQuery } from '@/utils/utils';
 
@@ -11,13 +11,14 @@ const Model = {
   },
   effects: {
     *login({ payload }, { call, put }) {
-      const response = yield call(fakeAccountLogin, payload);
+      const response = yield call(userLogin, payload);
       yield put({
         type: 'changeLoginStatus',
         payload: response,
       }); // Login successfully
-
-      if (response.status === 'ok') {
+      // 定义自己业务的登录成功条件
+      if (response.code === 200) {
+        localStorage.setItem('ant-token', 'ok')
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
         let { redirect } = params;

@@ -9,7 +9,7 @@ export default {
   "menu": {
     "locale": true
   },
-  "title": "Ant Design Pro",
+  "title": "HElti Admin",
   "pwa": false,
   "iconfontUrl": "",
   "collapse": true,
