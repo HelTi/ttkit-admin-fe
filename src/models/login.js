@@ -1,6 +1,6 @@
 import { routerRedux } from 'dva/router';
 import { stringify } from 'querystring';
-import { userLogin, getFakeCaptcha } from '@/services/login';
+import { userLogin, getFakeCaptcha, userLoginOut } from '@/services/login';
 import { setAuthority } from '@/utils/authority';
 import { getPageQuery } from '@/utils/utils';
 
@@ -18,7 +18,7 @@ const Model = {
       }); // Login successfully
       // 定义自己业务的登录成功条件
       if (response.code === 200) {
-        localStorage.setItem('ant-token', 'ok')
+        localStorage.setItem('ant-token', 'ok');
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
         let { redirect } = params;
@@ -46,18 +46,20 @@ const Model = {
       yield call(getFakeCaptcha, payload);
     },
 
-    *logout(_, { put }) {
-      const { redirect } = getPageQuery(); // redirect
-
-      if (window.location.pathname !== '/user/login' && !redirect) {
-        yield put(
-          routerRedux.replace({
-            pathname: '/user/login',
-            search: stringify({
-              redirect: window.location.href,
+    *logout(_, { call, put }) {
+      const response = yield call(userLoginOut);
+      if (response.code === 200) {
+        const { redirect } = getPageQuery(); // redirect
+        if (window.location.pathname !== '/user/login' && !redirect) {
+          yield put(
+            routerRedux.replace({
+              pathname: '/user/login',
+              search: stringify({
+                redirect: window.location.href,
+              }),
             }),
-          }),
-        );
+          );
+        }
       }
     },
   },
