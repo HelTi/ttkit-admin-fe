@@ -12,9 +12,14 @@ const Model = {
   effects: {
     *login({ payload }, { call, put }) {
       const response = yield call(userLogin, payload);
+
       yield put({
         type: 'changeLoginStatus',
-        payload: response,
+        payload: {
+          currentAuthority: 'admin',
+          status: 'ok',
+          type: 'account',
+        }, // admin user 权限
       }); // Login successfully
       // 定义自己业务的登录成功条件
       if (response.code === 200) {

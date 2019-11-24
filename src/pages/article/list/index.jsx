@@ -3,6 +3,7 @@ import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { queryCurrent } from '@/services/user';
 import { queryArticleList } from '@/services/article';
 import { Table, Tag, Button, Card } from 'antd';
+import { formatDate } from '@/utils/utils';
 
 const columns = [
   {
@@ -32,10 +33,12 @@ const columns = [
   {
     title: '创建时间',
     dataIndex: 'create_time',
+    render: text => <span>{formatDate(text)}</span>,
   },
   {
     title: '更新时间',
     dataIndex: 'update_time',
+    render: text => <span>{formatDate(text)}</span>,
   },
   {
     title: '操作',
@@ -65,6 +68,12 @@ class ArticleList extends React.Component {
     articleTotal: 0,
     pageSize: 10,
     loading: true,
+    paginationConfig: {
+      current: 1,
+      pageSize: 10,
+      total: 100,
+      showSizeChanger: true,
+    },
   };
 
   getArticleList = () => {
@@ -72,15 +81,33 @@ class ArticleList extends React.Component {
       loading: true,
     });
     let queryParams = {
-      pageSize: this.state.pageSize,
-      page: this.state.currentPage,
+      pageSize: this.state.paginationConfig.pageSize,
+      page: this.state.paginationConfig.current,
     };
     queryArticleList(queryParams).then(({ data }) => {
       this.setState({
         articles: data.data,
         loading: false,
+        paginationConfig: Object.assign(this.state.paginationConfig, { total: data.count }),
       });
     });
+  };
+
+  onChangeHandle = pagination => {
+    this.setState({
+      paginationConfig: Object.assign(this.state.paginationConfig, {
+        current: pagination.current,
+      }),
+    });
+    if (this.state.paginationConfig.pageSize !== pagination.pageSize) {
+      this.setState({
+        paginationConfig: Object.assign(this.state.paginationConfig, {
+          current: 1,
+          pageSize: pagination.pageSize,
+        }),
+      });
+    }
+    this.getArticleList();
   };
 
   componentDidMount() {
@@ -90,7 +117,13 @@ class ArticleList extends React.Component {
     const articles = this.state.articles;
     return (
       <Card bordered={false}>
-        <Table rowKey={record => record.uuid} columns={columns} dataSource={articles}></Table>
+        <Table
+          rowKey={record => record.uuid}
+          columns={columns}
+          onChange={this.onChangeHandle}
+          dataSource={articles}
+          pagination={this.state.paginationConfig}
+        ></Table>
       </Card>
     );
   }
