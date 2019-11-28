@@ -11,7 +11,6 @@ const { Tab, UserName, Password, Mobile, Captcha, Submit } = LoginComponents;
   userLogin: login,
   submitting: loading.effects['login/login'],
 }))
-
 class Login extends Component {
   loginForm = undefined;
   state = {
@@ -28,7 +27,7 @@ class Login extends Component {
 
     if (!err) {
       const { dispatch } = this.props;
-      console.log('values',values)
+      console.log('values', values);
       // 请求登录
       dispatch({
         type: 'login/login',
@@ -36,35 +35,7 @@ class Login extends Component {
       });
     }
   };
-  onTabChange = type => {
-    this.setState({
-      type,
-    });
-  };
-  onGetCaptcha = () =>
-    new Promise((resolve, reject) => {
-      if (!this.loginForm) {
-        return;
-      }
-
-      this.loginForm.validateFields(['mobile'], {}, async (err, values) => {
-        if (err) {
-          reject(err);
-        } else {
-          const { dispatch } = this.props;
-
-          try {
-            const success = await dispatch({
-              type: 'login/getCaptcha',
-              payload: values.mobile,
-            });
-            resolve(!!success);
-          } catch (error) {
-            reject(error);
-          }
-        }
-      });
-    });
+  
   renderMessage = content => (
     <Alert
       style={{
