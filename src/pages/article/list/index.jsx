@@ -1,9 +1,11 @@
 import React from 'react';
+import router from 'umi/router';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { queryCurrent } from '@/services/user';
 import { queryArticleList } from '@/services/article';
 import { Table, Tag, Button, Card } from 'antd';
 import { formatDate } from '@/utils/utils';
+import styles from './style.less'
 
 const columns = [
   {
@@ -20,7 +22,7 @@ const columns = [
     render: (text, record) => (
       <span>
         {record.tags.map(tag => (
-          <Tag>{tag.name}</Tag>
+          <Tag key={tag._id}>{tag.name}</Tag>
         ))}
       </span>
     ),
@@ -110,21 +112,32 @@ class ArticleList extends React.Component {
     this.getArticleList();
   };
 
+  addArticelHandle = ()=>{
+    router.push('/article/add')
+  }
+
   componentDidMount() {
     this.getArticleList();
   }
   render() {
     const articles = this.state.articles;
     return (
-      <Card bordered={false}>
-        <Table
-          rowKey={record => record.uuid}
-          columns={columns}
-          onChange={this.onChangeHandle}
-          dataSource={articles}
-          pagination={this.state.paginationConfig}
-        ></Table>
-      </Card>
+      <>
+        <Card bordered={false}>
+          <div className="search-form">
+            <Button onClick={this.addArticelHandle} type="primary">新增</Button>
+          </div>
+          <div className={styles.adminTable}>
+            <Table
+              rowKey={record => record.uuid}
+              columns={columns}
+              onChange={this.onChangeHandle}
+              dataSource={articles}
+              pagination={this.state.paginationConfig}
+            ></Table>
+          </div>
+        </Card>
+      </>
     );
   }
 }

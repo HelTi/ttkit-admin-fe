@@ -9,3 +9,9 @@ export async function queryArticleList({ page = 1, pageSize = 10 } = {}) {
     },
   });
 }
+
+export async function fetchTags () {
+  return request('/tag', {
+    method: 'GET',
+  })
+}

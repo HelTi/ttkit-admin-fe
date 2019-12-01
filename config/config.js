@@ -128,6 +128,7 @@ export default {
                   name: 'add-article',
                   path: '/article/add',
                   component: './article/add',
+                  hideInMenu: true,
                 },
                 {
                   name: 'article-tag',
