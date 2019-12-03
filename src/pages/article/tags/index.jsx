@@ -1,6 +1,6 @@
 import React from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import { fetchTags } from '@/services/article';
+import { fetchTags, addTag, deleteTag } from '@/services/article';
 import { Tag, Card, Icon, Input } from 'antd';
 
 const TagColor = {
@@ -23,9 +23,13 @@ class ArticleTag extends React.Component {
   };
 
   handleClose = removedTag => {
-    const tags = this.state.tags.filter(tag => tag !== removedTag);
-    console.log(tags);
-    this.setState({ tags });
+    deleteTag(removedTag._id).then(res => {
+      if (res.code === 200) {
+        const tags = this.state.tags.filter(tag => tag !== removedTag);
+        console.log(tags);
+        this.setState({ tags });
+      }
+    });
   };
 
   showInput = () => {
@@ -38,15 +42,19 @@ class ArticleTag extends React.Component {
 
   handleInputConfirm = () => {
     const { inputValue } = this.state;
-    let { tags } = this.state;
-    if (inputValue && tags.indexOf(inputValue) === -1) {
-      tags = [...tags, inputValue];
-    }
-    console.log(tags);
-    this.setState({
-      tags,
-      inputVisible: false,
-      inputValue: '',
+    addTag(inputValue).then(res => {
+      if (res === 'ok') {
+        let { tags } = this.state;
+        if (inputValue && tags.indexOf(inputValue) === -1) {
+          tags = [...tags, inputValue];
+        }
+        console.log(tags);
+        this.setState({
+          tags,
+          inputVisible: false,
+          inputValue: '',
+        });
+      }
     });
   };
 
@@ -57,7 +65,7 @@ class ArticleTag extends React.Component {
       console.log(res);
       let { data } = res;
       this.setState({
-        tags: data.map(item => item.name),
+        tags: data,
       });
       console.log(this.state);
     });
@@ -73,7 +81,7 @@ class ArticleTag extends React.Component {
             closable={true}
             key={index}
           >
-            {tag}
+            {tag.name}
           </Tag>
         ))}
         {inputVisible && (

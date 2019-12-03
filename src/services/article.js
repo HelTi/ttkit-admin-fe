@@ -15,3 +15,21 @@ export async function fetchTags () {
     method: 'GET',
   })
 }
+
+export async function addTag (name) {
+  return request('/tag/add', {
+    method: 'POST',
+    data: {
+      name,
+    },
+  })
+}
+
+export async function deleteTag (id) {
+  return request('/tag/delete', {
+    method: 'POST',
+    data: {
+      _id: id,
+    },
+  })
+}
