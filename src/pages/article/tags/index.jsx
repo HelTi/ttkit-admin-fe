@@ -44,23 +44,18 @@ class ArticleTag extends React.Component {
     const { inputValue } = this.state;
     addTag(inputValue).then(res => {
       if (res === 'ok') {
-        let { tags } = this.state;
-        if (inputValue && tags.indexOf(inputValue) === -1) {
-          tags = [...tags, inputValue];
-        }
-        console.log(tags);
         this.setState({
-          tags,
           inputVisible: false,
           inputValue: '',
         });
+        this.getTags();
       }
     });
   };
 
   saveInputRef = input => (this.input = input);
 
-  componentDidMount() {
+  getTags = () => {
     fetchTags().then(res => {
       console.log(res);
       let { data } = res;
@@ -69,6 +64,10 @@ class ArticleTag extends React.Component {
       });
       console.log(this.state);
     });
+  };
+
+  componentDidMount() {
+    this.getTags();
   }
   render() {
     const { tags, inputVisible, inputValue } = this.state;
