@@ -106,12 +106,6 @@ export default {
               name: 'home',
               icon: 'appstore',
               component: './home/home',
-            },
-            {
-              path: '/admin',
-              name: 'admin',
-              icon: 'crown',
-              component: './Admin',
               authority: ['admin'],
             },
             {
@@ -138,7 +132,16 @@ export default {
               ],
             },
             {
-              component: './404',
+              path: '/comment',
+              icon: 'book',
+              name: 'comment',
+              routes: [
+                {
+                  name: 'comment-list',
+                  path: '/comment/list',
+                  component: './comment/list'
+                }
+              ]
             }
           ],
         },

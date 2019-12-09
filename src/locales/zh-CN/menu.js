@@ -52,4 +52,6 @@ export default {
   'menu.article.add-article': '添加文章',
   'menu.article.article-list': '文章列表',
   'menu.article.article-tag': '文章标签',
+  'menu.comment': '评论管理',
+  'menu.comment.comment-list': '评论列表',
 };
