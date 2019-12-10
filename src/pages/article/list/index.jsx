@@ -5,7 +5,7 @@ import { queryCurrent } from '@/services/user';
 import { queryArticleList } from '@/services/article';
 import { Table, Tag, Button, Card } from 'antd';
 import { formatDate } from '@/utils/utils';
-import styles from './style.less'
+import styles from './style.less';
 
 const columns = [
   {
@@ -112,9 +112,9 @@ class ArticleList extends React.Component {
     this.getArticleList();
   };
 
-  addArticelHandle = ()=>{
-    router.push('/article/add')
-  }
+  addArticelHandle = () => {
+    router.push('/article/add');
+  };
 
   componentDidMount() {
     this.getArticleList();
@@ -123,20 +123,24 @@ class ArticleList extends React.Component {
     const articles = this.state.articles;
     return (
       <>
-        <Card bordered={false}>
-          <div className="search-form">
-            <Button onClick={this.addArticelHandle} type="primary">新增</Button>
-          </div>
-          <div className={styles.adminTable}>
-            <Table
-              rowKey={record => record.uuid}
-              columns={columns}
-              onChange={this.onChangeHandle}
-              dataSource={articles}
-              pagination={this.state.paginationConfig}
-            ></Table>
-          </div>
-        </Card>
+        <PageHeaderWrapper>
+          <Card bordered={false}>
+            <div className="search-form">
+              <Button onClick={this.addArticelHandle} type="primary">
+                新增
+              </Button>
+            </div>
+            <div className={styles.adminTable}>
+              <Table
+                rowKey={record => record.uuid}
+                columns={columns}
+                onChange={this.onChangeHandle}
+                dataSource={articles}
+                pagination={this.state.paginationConfig}
+              ></Table>
+            </div>
+          </Card>
+        </PageHeaderWrapper>
       </>
     );
   }

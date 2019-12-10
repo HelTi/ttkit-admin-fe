@@ -72,35 +72,37 @@ class ArticleTag extends React.Component {
   render() {
     const { tags, inputVisible, inputValue } = this.state;
     return (
-      <Card bordered={false} title="文章标签">
-        {tags.map((tag, index) => (
-          <Tag
-            onClose={() => this.handleClose(tag)}
-            color={TagColor[(index + 1) % 10]}
-            closable={true}
-            key={index}
-          >
-            {tag.name}
-          </Tag>
-        ))}
-        {inputVisible && (
-          <Input
-            ref={this.saveInputRef}
-            type="text"
-            size="small"
-            style={{ width: 78 }}
-            value={inputValue}
-            onChange={this.handleInputChange}
-            onBlur={this.handleInputConfirm}
-            onPressEnter={this.handleInputConfirm}
-          />
-        )}
-        {!inputVisible && (
-          <Tag onClick={this.showInput} style={{ background: '#fff', borderStyle: 'dashed' }}>
-            <Icon type="plus" /> New Tag
-          </Tag>
-        )}
-      </Card>
+      <PageHeaderWrapper>
+        <Card bordered={false} title="文章标签">
+          {tags.map((tag, index) => (
+            <Tag
+              onClose={() => this.handleClose(tag)}
+              color={TagColor[(index + 1) % 10]}
+              closable={true}
+              key={index}
+            >
+              {tag.name}
+            </Tag>
+          ))}
+          {inputVisible && (
+            <Input
+              ref={this.saveInputRef}
+              type="text"
+              size="small"
+              style={{ width: 78 }}
+              value={inputValue}
+              onChange={this.handleInputChange}
+              onBlur={this.handleInputConfirm}
+              onPressEnter={this.handleInputConfirm}
+            />
+          )}
+          {!inputVisible && (
+            <Tag onClick={this.showInput} style={{ background: '#fff', borderStyle: 'dashed' }}>
+              <Icon type="plus" /> New Tag
+            </Tag>
+          )}
+        </Card>
+      </PageHeaderWrapper>
     );
   }
 }

@@ -23,7 +23,8 @@ const Model = {
       }); // Login successfully
       // 定义自己业务的登录成功条件
       if (response.code === 200) {
-        localStorage.setItem('ant-token', 'ok');
+        // TODO jwt
+        localStorage.setItem('token', 'token');
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
         let { redirect } = params;
