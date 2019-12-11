@@ -56,4 +56,14 @@ const request = extend({
   credentials: 'include', // 默认请求是否带上cookie
   prefix: ApiUrl.ManApiUrl,
 });
+
+// response拦截器, 处理response
+request.interceptors.response.use(async response => {
+  const data = await response.clone().json();
+  if (data.code === 600) {
+    localStorage.removeItem('token')
+    window.location.href = `/user/login?redirect=${encodeURIComponent(window.location.href)}`
+  }
+  return response;
+});
 export default request;
