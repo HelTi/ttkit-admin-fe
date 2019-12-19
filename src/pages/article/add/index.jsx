@@ -1,9 +1,14 @@
 import React from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import { Card, Form, Input, Select, Button } from 'antd';
+import { Card, Form, Input, Select, Button, Checkbox } from 'antd';
 const { Option } = Select;
 
+import { fetchTags } from '@/services/article';
+
 class ArticleAdd extends React.Component {
+  state = {
+    tags: [],
+  };
   handleSubmit = e => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
@@ -17,6 +22,16 @@ class ArticleAdd extends React.Component {
       status: value,
     });
   };
+
+  componentDidMount() {
+    fetchTags().then(res => {
+      if (res.success) {
+        this.setState({
+          tags: res.data,
+        });
+      }
+    });
+  }
 
   render() {
     const { getFieldDecorator, getFieldsError, getFieldError, isFieldTouched } = this.props.form;
@@ -37,16 +52,13 @@ class ArticleAdd extends React.Component {
             <Form.Item label="文章标题">
               {getFieldDecorator('name')(<Input placeholder="文章标题" />)}
             </Form.Item>
-            <Form.Item label="状态">
-              {getFieldDecorator('status', {
-                rules: [{ required: false, message: 'Please select your country!' }],
-                initialValue: '0',
-              })(
-                <Select style={{ width: 100 }} onChange={this.handleStatusChange}>
-                  <Option value="0">全部</Option>
-                  <Option value="1">启用</Option>
-                  <Option value="2">禁用</Option>
-                </Select>,
+            <Form.Item label="文章标签">
+              {getFieldDecorator('article_tag', {})(
+                <Checkbox.Group>
+                  {this.state.tags.map(tag => (
+                    <Checkbox key={tag._id} value={tag.name}>{tag.name}</Checkbox>
+                  ))}
+                </Checkbox.Group>,
               )}
             </Form.Item>
             <Form.Item
