@@ -1,7 +1,6 @@
 import React from 'react';
 import router from 'umi/router';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import { queryCurrent } from '@/services/user';
 import { queryArticleList } from '@/services/article';
 import { Table, Tag, Button, Card } from 'antd';
 import { formatDate } from '@/utils/utils';
@@ -78,11 +77,13 @@ class ArticleList extends React.Component {
     },
   };
 
+  componentDidMount() {
+    this.getArticleList();
+  }
+
   getArticleList = () => {
-    this.setState({
-      loading: true,
-    });
-    let queryParams = {
+    this.state.loading = true
+    const queryParams = {
       pageSize: this.state.paginationConfig.pageSize,
       page: this.state.paginationConfig.current,
     };
@@ -116,11 +117,9 @@ class ArticleList extends React.Component {
     router.push('/article/add');
   };
 
-  componentDidMount() {
-    this.getArticleList();
-  }
+
   render() {
-    const articles = this.state.articles;
+    const { articles } = this.state;
     return (
       <>
         <PageHeaderWrapper>

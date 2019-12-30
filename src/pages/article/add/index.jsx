@@ -1,14 +1,16 @@
 import React from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { Card, Form, Input, Select, Button, Checkbox } from 'antd';
-const { Option } = Select;
 
 import { fetchTags } from '@/services/article';
+
+const { Option } = Select;
 
 class ArticleAdd extends React.Component {
   state = {
     tags: [],
   };
+
   handleSubmit = e => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
@@ -17,6 +19,7 @@ class ArticleAdd extends React.Component {
       }
     });
   };
+
   handleStatusChange = value => {
     this.setState({
       status: value,

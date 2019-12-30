@@ -3,7 +3,7 @@ import router from 'umi/router'
 
 import { PageHeaderWrapper } from '@ant-design/pro-layout'
 
-class Comment extends React.Component {
+class Comment extends React.PureComponent {
   render() {
     return (
       <PageHeaderWrapper>
