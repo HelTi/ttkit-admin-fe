@@ -1,11 +1,11 @@
-import { Alert, Checkbox, Icon } from 'antd';
+import { Alert } from 'antd';
 import { FormattedMessage, formatMessage } from 'umi-plugin-react/locale';
 import React, { Component } from 'react';
-import Link from 'umi/link';
 import { connect } from 'dva';
 import LoginComponents from './components/Login';
 import styles from './style.less';
-const { Tab, UserName, Password, Mobile, Captcha, Submit } = LoginComponents;
+
+const { Tab, UserName, Password, Submit } = LoginComponents;
 
 @connect(({ login, loading }) => ({
   userLogin: login,
@@ -13,15 +13,11 @@ const { Tab, UserName, Password, Mobile, Captcha, Submit } = LoginComponents;
 }))
 class Login extends Component {
   loginForm = undefined;
+
   state = {
     type: 'account', // 账号密码登录/手机号登录
-    autoLogin: true, // 记住登录
   };
-  changeAutoLogin = e => {
-    this.setState({
-      autoLogin: e.target.checked,
-    });
-  };
+
   handleSubmit = (err, values) => {
     const { type } = this.state;
 
@@ -35,7 +31,7 @@ class Login extends Component {
       });
     }
   };
-  
+
   renderMessage = content => (
     <Alert
       style={{
@@ -50,7 +46,7 @@ class Login extends Component {
   render() {
     const { userLogin, submitting } = this.props;
     const { status, type: loginType } = userLogin;
-    const { type, autoLogin } = this.state;
+    const { type } = this.state;
     return (
       <div className={styles.main}>
         <LoginComponents

@@ -38,7 +38,7 @@ const AuthComponent = ({
   const { currentUser } = user;
   const { routes = [] } = route;
   // 是否登录,可以根据自己的业务来设置登录条件
-  const isLogin = currentUser && currentUser.name;
+  const isLogin = window.localStorage.getItem('token');
   return (
     <Authorized
       authority={getRouteAuthority(location.pathname, routes) || ''}

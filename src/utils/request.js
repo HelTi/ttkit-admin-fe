@@ -57,12 +57,27 @@ const request = extend({
   prefix: ApiUrl.ManApiUrl,
 });
 
+// request拦截器, 改变url 或 options.
+request.interceptors.request.use((url, options) => ({
+  options: {
+    ...options,
+    headers: {
+      Authorization: window.localStorage.getItem('token'),
+    },
+  },
+}));
+
 // response拦截器, 处理response
 request.interceptors.response.use(async response => {
   const data = await response.clone().json();
   if (data.code === 600) {
-    localStorage.removeItem('token')
-    window.location.href = `/user/login?redirect=${encodeURIComponent(window.location.href)}`
+    notification.error({
+      message: '登录已过期！',
+    });
+    setTimeout(() => {
+      localStorage.removeItem('token');
+      window.location.href = `/user/login?redirect=${encodeURIComponent(window.location.href)}`;
+    }, 1000)
   }
   return response;
 });

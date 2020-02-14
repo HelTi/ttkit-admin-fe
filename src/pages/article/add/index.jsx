@@ -1,29 +1,12 @@
 import React from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import { Card, Form, Input, Select, Button, Checkbox } from 'antd';
+import { Card, Form, Input, Button, Checkbox } from 'antd';
 
 import { fetchTags } from '@/services/article';
-
-const { Option } = Select;
 
 class ArticleAdd extends React.Component {
   state = {
     tags: [],
-  };
-
-  handleSubmit = e => {
-    e.preventDefault();
-    this.props.form.validateFields((err, values) => {
-      if (!err) {
-        console.log('Received values of form: ', values);
-      }
-    });
-  };
-
-  handleStatusChange = value => {
-    this.setState({
-      status: value,
-    });
   };
 
   componentDidMount() {
@@ -36,8 +19,17 @@ class ArticleAdd extends React.Component {
     });
   }
 
+  handleSubmit = e => {
+    e.preventDefault();
+    this.props.form.validateFields((err, values) => {
+      if (!err) {
+        console.log('Received values of form: ', values);
+      }
+    });
+  };
+
   render() {
-    const { getFieldDecorator, getFieldsError, getFieldError, isFieldTouched } = this.props.form;
+    const { getFieldDecorator } = this.props.form;
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -59,7 +51,9 @@ class ArticleAdd extends React.Component {
               {getFieldDecorator('article_tag', {})(
                 <Checkbox.Group>
                   {this.state.tags.map(tag => (
-                    <Checkbox key={tag._id} value={tag.name}>{tag.name}</Checkbox>
+                    <Checkbox key={tag} value={tag.name}>
+                      {tag.name}
+                    </Checkbox>
                   ))}
                 </Checkbox.Group>,
               )}
