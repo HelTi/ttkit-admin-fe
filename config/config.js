@@ -142,6 +142,23 @@ export default {
                   component: './comment/list'
                 }
               ]
+            },
+            {
+              path: '/websit',
+              icon: 'book',
+              name: 'websit',
+              routes: [
+                {
+                  name: 'websit-photo',
+                  path: '/websit/photo',
+                  component: './websit/photo'
+                },
+                {
+                  name: 'websit-vistor',
+                  path: '/websit/vistor',
+                  component: './websit/visitor'
+                }
+              ]
             }
           ],
         },

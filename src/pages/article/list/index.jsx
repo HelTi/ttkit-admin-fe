@@ -136,6 +136,7 @@ class ArticleList extends React.Component {
                 onChange={this.onChangeHandle}
                 dataSource={articles}
                 pagination={this.state.paginationConfig}
+                loading={this.state.loading}
               ></Table>
             </div>
           </Card>
