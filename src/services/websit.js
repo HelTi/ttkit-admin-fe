@@ -27,3 +27,30 @@ export async function fetchVisitorList({ page = 1, pageSize = 10 } = {}) {
     },
   });
 }
+
+/**
+ * 获取评论列表
+ * @param {*} param0
+ */
+export async function fetchCommentList({ page = 1, pageSize = 10 } = {}) {
+  return request('/comment', {
+    method: 'GET',
+    params: {
+      page,
+      pageSize,
+    },
+  });
+}
+
+/**
+ * 删除评论
+ * @param {*} _id
+ */
+export async function deleteCommentById(_id) {
+  return request('/comment/delete', {
+    method: 'GET',
+    params: {
+      _id,
+    },
+  });
+}
