@@ -46,10 +46,7 @@ const columns = [
     key: 'action',
     render: (text, record) => (
       <div>
-        <Button type="primary" size="small">
-          查看
-        </Button>
-        <Button type="dashed" size="small">
+        <Button type="dashed" size="small" style={{ marginRight: '8px' }}>
           编辑
         </Button>
         <Button type="danger" size="small">

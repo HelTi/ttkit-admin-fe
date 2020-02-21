@@ -33,3 +33,25 @@ export async function deleteTag (id) {
     },
   })
 }
+
+
+export async function addArticle (params) {
+  return request('/article/add', {
+    method: 'POST',
+    data: params,
+  })
+}
+
+export async function updateArticle (id, params) {
+  return request('/article/update', {
+    method: 'POST',
+    data: { ...params, id },
+  })
+}
+
+export async function deleteArticle (uid) {
+  return request('/article/delete', {
+    method: 'POST',
+    data: { uid },
+  })
+}
