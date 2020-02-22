@@ -1,23 +1,26 @@
 import React from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import { Card, Form, Input, Button, Checkbox, Radio } from 'antd';
+import { Card, Form, Input, Button, Checkbox, Radio, message, Icon } from 'antd';
+import Editor from 'for-editor';
+import marked from 'marked';
+import router from 'umi/router';
+import styles from './style.less';
 
-import { fetchTags, addArticle } from '@/services/article';
-
-const { TextArea } = Input;
+import { fetchTags, addArticle, fetchArticleDetail, updateArticle } from '@/services/article';
+import { replaceHtml } from '@/utils/utils';
 
 class ArticleAdd extends React.Component {
   state = {
     tags: [],
-    isEdit: false,
-    id: null,
+    uuid: null,
   };
 
   componentDidMount() {
-    this.getTags()
+    this.getTags();
+    this.checkIsEdit();
   }
 
-  getTags= () => {
+  getTags = () => {
     fetchTags().then(res => {
       if (res.success) {
         this.setState({
@@ -25,29 +28,76 @@ class ArticleAdd extends React.Component {
         });
       }
     });
-  }
+  };
+
+  checkIsEdit = () => {
+    const { uuid } = this.props.location.query || null;
+    if (uuid) {
+      this.setState({
+        uuid,
+      });
+      this.setArticleDetailFormField(uuid);
+    }
+  };
+
+  setArticleDetailFormField = async uuid => {
+    const { data } = await fetchArticleDetail(uuid);
+    this.props.form.setFieldsValue({
+      title: data.title,
+      selectedTags: data.tags.map(tag => tag.name),
+      private: data.private,
+      type: data.type,
+      markdown: data.markdown,
+    });
+  };
 
   handleSubmit = e => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        const tags = values.selectedTags.map(tag => ({ name: tag }))
+        const tags = values.selectedTags.map(tag => ({ name: tag }));
+        const content = marked(values.markdown);
         const params = {
           ...values,
           tags,
-          content: values.markdown,
-          excerpt: '简介',
-        }
-        console.log('p', params)
-        this.addArticle(params)
+          content,
+        };
+        // 文章简介
+        const excerptStr = replaceHtml(content.slice(0, 200));
+        params.excerpt = excerptStr.length > 137 ? `${excerptStr.slice(0, 137)}...` : excerptStr;
+
+        this.addArticle(params);
       }
     });
   };
 
   addArticle = params => {
-    addArticle(params).then(res => {
-      console.log(res)
-    })
+    const { uuid } = this.state;
+    if (uuid) {
+      // 更新文章
+      updateArticle(uuid, params).then(res => {
+        if (res.code === 200) {
+          message.success('更新文章成功！');
+          router.push('/article/list');
+        } else {
+          message.error('更新文章失败！');
+        }
+      });
+    } else {
+      // 新增文章
+      addArticle(params).then(res => {
+        if (res.code === 200) {
+          message.success('添加文章成功！');
+          router.push('/article/list');
+        } else {
+          message.error(res.msg);
+        }
+      });
+    }
+  };
+
+  cancleEditHandle = () => {
+    router.go(-1)
   }
 
   render() {
@@ -61,6 +111,17 @@ class ArticleAdd extends React.Component {
         xs: { span: 24 },
         sm: { span: 22 },
       },
+    };
+    const toolbar = {
+      img: true, // 图片
+      link: true, // 链接
+      code: true, // 代码块
+      preview: true, // 预览
+      expand: true, // 全屏
+      undo: true, // 撤销
+      redo: true, // 重做
+      save: true, // 保存
+      subfield: true, // 单双栏模式
     };
     return (
       <PageHeaderWrapper>
@@ -96,15 +157,22 @@ class ArticleAdd extends React.Component {
                 </Radio.Group>,
               )}
             </Form.Item>
-            <Form.Item label="文章内容">{getFieldDecorator('markdown')(<TextArea />)}</Form.Item>
+            <Form.Item label="文章内容">
+              {getFieldDecorator('markdown')(<Editor height="300px" toolbar={toolbar} />)}
+            </Form.Item>
             <Form.Item
               wrapperCol={{
                 xs: { span: 24, offset: 0 },
                 sm: { span: 22, offset: 2 },
               }}
             >
-              <Button className="margin-left" type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit">
+                <Icon type="check" />
                 保存
+              </Button>
+              <Button className={styles.marginLeft} type="primary" onClick={this.cancleEditHandle}>
+                <Icon type="left" />
+                取消
               </Button>
             </Form.Item>
           </Form>

@@ -51,7 +51,14 @@ export async function updateArticle (id, params) {
 
 export async function deleteArticle (uid) {
   return request('/article/delete', {
-    method: 'POST',
-    data: { uid },
+    method: 'GET',
+    params: { uid },
+  })
+}
+
+export async function fetchArticleDetail (uuid) {
+  return request(`/article/detail/${uuid}`, {
+    method: 'GET',
+    params: null,
   })
 }
