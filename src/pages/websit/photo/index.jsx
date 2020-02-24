@@ -1,10 +1,10 @@
-import React from 'react'
-import { PageHeaderWrapper } from '@ant-design/pro-layout'
-import { fetchUploadList } from '@/services/websit'
-import { Card, Table } from 'antd'
-import ApiUrl from '@/services/api-url'
+import React from 'react';
+import { PageHeaderWrapper } from '@ant-design/pro-layout';
+import { fetchUploadList } from '@/services/websit';
+import { Card, Table, Upload, message, Button, Icon } from 'antd';
+import ApiUrl from '@/services/api-url';
 import { formatDate } from '@/utils/utils';
-
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 const columns = [
   {
@@ -15,16 +15,20 @@ const columns = [
     title: '预览',
     render: (text, record) => (
       <div>
-        <img alt="" style={{ width: 50 }} src={`${ApiUrl.ManApiUrl}${record.filePath.replace('public', '')}`}/>
+        <img
+          alt=""
+          style={{ width: 50 }}
+          src={`${ApiUrl.ManApiUrl}${record.filePath.replace('public', '')}`}
+        />
       </div>
     ),
   },
   {
     title: '文件路径',
     render: (text, record) => (
-      <span>
-        {`${ApiUrl.ManApiUrl}${record.filePath.replace('public', '')}`}
-      </span>
+      <CopyToClipboard text={`${ApiUrl.ManApiUrl}${record.filePath.replace('public', '')}`} onCopy={() => message.success('复制文本成功！')}>
+        <span style={{ cursor: 'pointer' }}>{`${ApiUrl.ManApiUrl}${record.filePath.replace('public', '')}`}</span>
+      </CopyToClipboard>
     ),
   },
   {
@@ -36,7 +40,7 @@ const columns = [
     dataIndex: 'upload_date',
     render: text => <span>{formatDate(text)}</span>,
   },
-]
+];
 
 class WebsitPhoto extends React.PureComponent {
   state = {
@@ -48,66 +52,92 @@ class WebsitPhoto extends React.PureComponent {
       total: 100,
       showSizeChanger: true,
     },
-  }
+  };
 
   componentDidMount() {
-    this.getUploadList()
+    this.getUploadList();
   }
 
   getUploadList = () => {
     this.setState({
       loading: true,
-    })
-    const { paginationConfig } = this.state
+    });
+    const { paginationConfig } = this.state;
     const parmas = {
-      page: paginationConfig.current, pageSize: paginationConfig.pageSize,
-    }
+      page: paginationConfig.current,
+      pageSize: paginationConfig.pageSize,
+    };
     fetchUploadList(parmas).then(res => {
       if (res.code === 200) {
-        const { data } = res
-        paginationConfig.total = data.count
+        const { data } = res;
+        paginationConfig.total = data.count;
         this.setState({
           fileList: data.data,
           loading: false,
           paginationConfig,
-        })
+        });
       }
-    })
-  }
+    });
+  };
 
   onChangeHandle = pagination => {
-    const { paginationConfig } = this.state
-    paginationConfig.pageSize = pagination.pageSize
-    paginationConfig.current = pagination.current
+    const { paginationConfig } = this.state;
+    paginationConfig.pageSize = pagination.pageSize;
+    paginationConfig.current = pagination.current;
     if (this.state.paginationConfig.pageSize !== pagination.pageSize) {
-      paginationConfig.current = 1
+      paginationConfig.current = 1;
     }
     this.setState({
       paginationConfig,
-    })
+    });
     this.getUploadList();
   };
 
   render() {
-    const { fileList } = this.state
+    const that = this;
+    const { fileList } = this.state;
+    const UploadProps = {
+      name: 'img',
+      action: `${ApiUrl.ManApiUrl}/upload`,
+      headers: {
+        Authorization: localStorage.getItem('token'),
+      },
+      onChange(info) {
+        if (info.file.status !== 'uploading') {
+          console.log(info.file, info.fileList);
+        }
+        if (info.file.status === 'done') {
+          message.success('上传图片成功！');
+          that.getUploadList();
+        } else if (info.file.status === 'error') {
+          message.error('上传图片失败');
+        }
+      },
+    };
     return (
       <PageHeaderWrapper>
         <Card bordered={false}>
+          <div className="card-top" style={{ marginBottom: '20px' }}>
+            <Upload {...UploadProps}>
+              <Button>
+                <Icon type="upload" /> 上传图片
+              </Button>
+            </Upload>
+          </div>
           <div className="tableContent">
-          <Table
-                rowKey={record => record._id}
-                columns={columns}
-                onChange={this.onChangeHandle}
-                dataSource={fileList}
-                pagination={this.state.paginationConfig}
-                loading={this.state.loading}
-              ></Table>
+            <Table
+              rowKey={record => record._id}
+              columns={columns}
+              onChange={this.onChangeHandle}
+              dataSource={fileList}
+              pagination={this.state.paginationConfig}
+              loading={this.state.loading}
+            ></Table>
           </div>
         </Card>
       </PageHeaderWrapper>
-    )
+    );
   }
 }
 
-
-export default WebsitPhoto
+export default WebsitPhoto;

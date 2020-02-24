@@ -9,7 +9,7 @@ export default {
   menu: {
     locale: true,
   },
-  title: 'HElti Admin',
+  title: 'ADMIN',
   pwa: false,
   iconfontUrl: '',
   collapse: true,
