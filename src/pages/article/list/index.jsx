@@ -4,6 +4,7 @@ import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { queryArticleList, deleteArticle } from '@/services/article';
 import { Table, Tag, Button, Card, Modal, message } from 'antd';
 import { formatDate } from '@/utils/utils';
+import ApiUrl from '@/services/api-url';
 import styles from './style.less';
 
 const { confirm } = Modal;
@@ -22,6 +23,15 @@ class ArticleList extends React.Component {
       {
         title: '文章标题',
         dataIndex: 'title',
+        width: 200,
+        ellipsis: true,
+        render: (text, record) => (
+          <>
+          <a href={`${ApiUrl.StaticUrl}/article/${record.uuid}`} target="_blank" rel="noopener noreferrer">
+            {text}
+          </a>
+          </>
+        ),
       },
       {
         title: '作者',
@@ -55,6 +65,7 @@ class ArticleList extends React.Component {
       },
       {
         title: '操作',
+        width: 150,
         render: (text, record) => (
           <div>
             <Button

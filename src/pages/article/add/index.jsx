@@ -7,9 +7,16 @@ import router from 'umi/router';
 import styles from './style.less';
 
 import { fetchTags, addArticle, fetchArticleDetail, updateArticle } from '@/services/article';
+import { uploadFile } from '@/services/upload';
 import { replaceHtml } from '@/utils/utils';
+import ApiUrl from '@/services/api-url';
 
 class ArticleAdd extends React.Component {
+  constructor() {
+    super();
+    this.$vm = React.createRef();
+  }
+
   state = {
     tags: [],
     uuid: null,
@@ -97,7 +104,25 @@ class ArticleAdd extends React.Component {
   };
 
   cancleEditHandle = () => {
-    router.go(-1)
+    router.go(-1);
+  };
+
+  addImg($file) {
+    console.log($file);
+    const formData = new FormData();
+    formData.append('img', $file);
+    uploadFile(formData)
+      .then(res => {
+        console.log('up', res);
+        if (res.code === 200) {
+          this.currentPage = 1;
+          const filePath = `${ApiUrl.ManApiUrl}${res.data.path.replace('public', '')}`;
+          this.$vm.current.$img2Url($file.name, filePath);
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
   }
 
   render() {
@@ -158,7 +183,14 @@ class ArticleAdd extends React.Component {
               )}
             </Form.Item>
             <Form.Item label="文章内容">
-              {getFieldDecorator('markdown')(<Editor height="300px" toolbar={toolbar} />)}
+              {getFieldDecorator('markdown')(
+                <Editor
+                  height="300px"
+                  ref={this.$vm}
+                  addImg={$file => this.addImg($file)}
+                  toolbar={toolbar}
+                />,
+              )}
             </Form.Item>
             <Form.Item
               wrapperCol={{
