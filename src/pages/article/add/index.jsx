@@ -4,12 +4,19 @@ import { Card, Form, Input, Button, Checkbox, Radio, message, Icon } from 'antd'
 import Editor from 'for-editor';
 import marked from 'marked';
 import router from 'umi/router';
+import highlight from 'highlight.js'
 import styles from './style.less';
 
 import { fetchTags, addArticle, fetchArticleDetail, updateArticle } from '@/services/article';
 import { uploadFile } from '@/services/upload';
 import { replaceHtml } from '@/utils/utils';
 import ApiUrl from '@/services/api-url';
+
+marked.setOptions({
+  highlight(code) {
+    return highlight.highlightAuto(code).value;
+  },
+})
 
 class ArticleAdd extends React.Component {
   constructor() {
