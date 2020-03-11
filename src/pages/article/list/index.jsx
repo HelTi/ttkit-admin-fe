@@ -18,6 +18,11 @@ class ArticleList extends React.Component {
       pageSize: 10,
       total: 100,
       showSizeChanger: true,
+      showTotal: total => (
+        <>
+          <p>共{total}条数据</p>
+        </>
+      ),
     },
     columns: [
       {
@@ -27,9 +32,13 @@ class ArticleList extends React.Component {
         ellipsis: true,
         render: (text, record) => (
           <>
-          <a href={`${ApiUrl.StaticUrl}/article/${record.uuid}`} target="_blank" rel="noopener noreferrer">
-            {text}
-          </a>
+            <a
+              href={`${ApiUrl.StaticUrl}/article/${record.uuid}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {text}
+            </a>
           </>
         ),
       },
@@ -94,34 +103,34 @@ class ArticleList extends React.Component {
   }
 
   getArticleList = () => {
-    this.state.loading = true;
-    const queryParams = {
-      pageSize: this.state.paginationConfig.pageSize,
-      page: this.state.paginationConfig.current,
+    this.setState({
+      loading: true,
+    });
+    const { paginationConfig } = this.state;
+    const parmas = {
+      page: paginationConfig.current,
+      pageSize: paginationConfig.pageSize,
     };
-    queryArticleList(queryParams).then(({ data }) => {
+    queryArticleList(parmas).then(({ data }) => {
+      paginationConfig.total = data.count;
       this.setState({
         articles: data.data,
         loading: false,
-        paginationConfig: Object.assign(this.state.paginationConfig, { total: data.count }),
+        paginationConfig,
       });
     });
   };
 
   onChangeHandle = pagination => {
-    this.setState({
-      paginationConfig: Object.assign(this.state.paginationConfig, {
-        current: pagination.current,
-      }),
-    });
+    const { paginationConfig } = this.state;
+    paginationConfig.pageSize = pagination.pageSize;
+    paginationConfig.current = pagination.current;
     if (this.state.paginationConfig.pageSize !== pagination.pageSize) {
-      this.setState({
-        paginationConfig: Object.assign(this.state.paginationConfig, {
-          current: 1,
-          pageSize: pagination.pageSize,
-        }),
-      });
+      paginationConfig.current = 1;
     }
+    this.setState({
+      paginationConfig,
+    });
     this.getArticleList();
   };
 

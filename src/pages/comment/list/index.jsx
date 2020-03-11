@@ -24,6 +24,11 @@ class Comment extends React.PureComponent {
       pageSize: 10,
       total: 0,
       showSizeChanger: true,
+      showTotal: total => (
+        <>
+          <p>共{total}条数据</p>
+        </>
+      ),
     },
     columns: [
       {

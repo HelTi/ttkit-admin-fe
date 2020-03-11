@@ -51,6 +51,11 @@ class WebsitPhoto extends React.PureComponent {
       pageSize: 10,
       total: 100,
       showSizeChanger: true,
+      showTotal: total => (
+        <>
+          <p>共{total}条数据</p>
+        </>
+      ),
     },
   };
 
