@@ -2,21 +2,35 @@ import React from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { Card, Form, Input, Button, Checkbox, Radio, message, Icon } from 'antd';
 import Editor from 'for-editor';
-import marked from 'marked';
+// import marked from 'marked';
 import router from 'umi/router';
-import highlight from 'highlight.js'
+// import highlight from 'highlight.js';
 import styles from './style.less';
-
+import UtilMarked from './marked'
 import { fetchTags, addArticle, fetchArticleDetail, updateArticle } from '@/services/article';
 import { uploadFile } from '@/services/upload';
 import { replaceHtml } from '@/utils/utils';
 import ApiUrl from '@/services/api-url';
 
-marked.setOptions({
-  highlight(code) {
-    return highlight.highlightAuto(code).value;
-  },
-})
+// const renderer = new marked.Renderer();
+
+// renderer.heading = (text, level) => {
+//   const escapedText = text.toLowerCase().replace(/[^\w]+/g, '-');
+//   return `
+//     <h${level}>
+//       <a name="${escapedText}" class="anchor" href="#${escapedText}">
+//         <span class="header-link"></span>
+//       </a>
+//       ${text}
+//     </h${level}>`;
+// };
+
+// marked.setOptions({
+//   highlight(code) {
+//     return highlight.highlightAuto(code).value;
+//   },
+//   renderer,
+// });
 
 class ArticleAdd extends React.Component {
   constructor() {
@@ -70,11 +84,14 @@ class ArticleAdd extends React.Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         const tags = values.selectedTags.map(tag => ({ name: tag }));
-        const content = marked(values.markdown);
+        const renderValue = UtilMarked(values.markdown)
+        const content = renderValue.html;
+        const { toc } = renderValue
         const params = {
           ...values,
           tags,
           content,
+          toc,
         };
         // 文章简介
         const excerptStr = replaceHtml(content.slice(0, 200));
