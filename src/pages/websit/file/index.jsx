@@ -6,6 +6,7 @@ import ApiUrl from '@/services/api-url';
 import { formatDate } from '@/utils/utils';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
+const byte2kb = val => (val / 1024).toFixed(2)
 const columns = [
   {
     title: '文件名',
@@ -34,6 +35,7 @@ const columns = [
   {
     title: '文件大小',
     dataIndex: 'size',
+    render: text => (`${byte2kb(text)}kb`),
   },
   {
     title: '上传时间',
@@ -112,10 +114,10 @@ class WebsitPhoto extends React.PureComponent {
           console.log(info.file, info.fileList);
         }
         if (info.file.status === 'done') {
-          message.success('上传图片成功！');
+          message.success('上传文件成功！');
           that.getUploadList();
         } else if (info.file.status === 'error') {
-          message.error('上传图片失败');
+          message.error('上传文件失败');
         }
       },
     };
@@ -125,7 +127,7 @@ class WebsitPhoto extends React.PureComponent {
           <div className="card-top" style={{ marginBottom: '20px' }}>
             <Upload {...UploadProps}>
               <Button>
-                <Icon type="upload" /> 上传图片
+                <Icon type="upload" /> 上传文件
               </Button>
             </Upload>
           </div>

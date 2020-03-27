@@ -55,6 +55,6 @@ export default {
   'menu.comment': '评论管理',
   'menu.comment.comment-list': '评论列表',
   'menu.websit': '站点管理',
-  'menu.websit.websit-photo': '图片管理',
+  'menu.websit.websit-file': '文件管理',
   'menu.websit.websit-vistor': '访客统计',
 };

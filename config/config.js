@@ -149,9 +149,9 @@ export default {
               name: 'websit',
               routes: [
                 {
-                  name: 'websit-photo',
-                  path: '/websit/photo',
-                  component: './websit/photo'
+                  name: 'websit-file',
+                  path: '/websit/file',
+                  component: './websit/file'
                 },
                 {
                   name: 'websit-vistor',
