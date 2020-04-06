@@ -1,6 +1,7 @@
 import React from 'react';
+import { Spin } from 'antd'
 import { Chart, Geom, Axis, Tooltip } from 'bizcharts';
-import { get7day } from '@/utils/date'
+import { queryDayViews } from '@/services/data';
 
 const styles = {
   mainTitle: {
@@ -15,21 +16,37 @@ const styles = {
   },
 };
 
-const randomNum = () => Math.floor(Math.random() * 100 + 1)
-
 class VisitorChart extends React.PureComponent {
+  state = {
+    data: null,
+    loading: true,
+  };
+
   componentDidMount() {
-    get7day()
-    get7day(-1)
-    console.log(randomNum())
+    this.getDayViews();
   }
 
+  getDayViews = () => {
+    queryDayViews().then(res => {
+      if (res.code === 200) {
+        const { data } = res;
+        const dataResult = [];
+        Object.keys(data).forEach(d => {
+          dataResult.push({
+            value: data[d],
+            day: d.slice(5),
+          });
+        });
+        this.setState({
+          data: dataResult,
+          loading: false,
+        });
+      }
+    });
+  };
+
   render() {
-    const day7 = get7day(-1)
-    const data = day7.map(day => ({
-        value: randomNum(),
-        day,
-      }))
+    const { data } = this.state;
 
     const cols = {
       value: {
@@ -41,6 +58,7 @@ class VisitorChart extends React.PureComponent {
     };
     return (
       <div>
+        <Spin spinning={this.state.loading}>
         <Chart height={400} data={data} scale={cols} forceFit>
           <h3 className="main-title" style={styles.mainTitle}>
             最近7天访问趋势
@@ -64,6 +82,8 @@ class VisitorChart extends React.PureComponent {
             }}
           />
         </Chart>
+        </Spin>
+
       </div>
     );
   }
