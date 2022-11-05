@@ -86,7 +86,7 @@ class Login extends Component {
               ]}
             />
             <Password
-              name="userpassword"
+              name="password"
               placeholder={`${formatMessage({
                 id: 'user-login.login.password',
               })}`}

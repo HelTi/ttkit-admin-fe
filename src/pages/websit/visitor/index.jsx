@@ -66,7 +66,7 @@ class WebsitPhoto extends React.PureComponent {
     })
     const { paginationConfig } = this.state
     const parmas = {
-      page: paginationConfig.current, pageSize: paginationConfig.pageSize,
+      pageNo: paginationConfig.current, pageSize: paginationConfig.pageSize,
     }
     fetchVisitorList(parmas).then(res => {
       if (res.code === 200) {

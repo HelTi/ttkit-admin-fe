@@ -1,10 +1,10 @@
 import request from '@/utils/request';
 
-export async function queryArticleList({ page = 1, pageSize = 10 } = {}) {
+export async function queryArticleList({ pageNo = 1, pageSize = 10 } = {}) {
   return request('/article/pages', {
     method: 'GET',
     params: {
-      page,
+      pageNo,
       pageSize,
     },
   });
@@ -42,10 +42,10 @@ export async function addArticle (params) {
   })
 }
 
-export async function updateArticle (id, params) {
+export async function updateArticle (uuid, params) {
   return request('/article/update', {
     method: 'POST',
-    data: { ...params, id },
+    data: { ...params, uuid },
   })
 }
 

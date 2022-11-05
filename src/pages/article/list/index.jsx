@@ -108,7 +108,7 @@ class ArticleList extends React.Component {
     });
     const { paginationConfig } = this.state;
     const parmas = {
-      page: paginationConfig.current,
+      pageNo: paginationConfig.current,
       pageSize: paginationConfig.pageSize,
     };
     queryArticleList(parmas).then(({ data }) => {
