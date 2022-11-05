@@ -11,7 +11,7 @@ class Home extends React.PureComponent {
       comment: 0,
       article: 0,
       file: 0,
-      vistor: 0,
+      visitor: 0,
     },
   };
 
@@ -58,7 +58,7 @@ class Home extends React.PureComponent {
                 </div>
                 <div className={styles.bodyContent}>
                   <span style={{ marginRight: 10 }}> 访问数</span>
-                  <span style={{ color: '#eb2f96' }}>{topCount.vistor}</span>
+                  <span style={{ color: '#eb2f96' }}>{topCount.visitor}</span>
                 </div>
               </div>
             </Card>

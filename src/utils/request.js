@@ -70,7 +70,7 @@ request.interceptors.request.use((url, options) => ({
 // response拦截器, 处理response
 request.interceptors.response.use(async response => {
   const data = await response.clone().json();
-  if (data.code === 600) {
+  if (data.code === 401) {
     notification.error({
       message: '登录已过期！',
     });

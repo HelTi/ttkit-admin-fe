@@ -50,7 +50,7 @@ class ArticleAdd extends React.Component {
 
   getTags = () => {
     fetchTags().then(res => {
-      if (res.success) {
+      if (res.code === 200) {
         this.setState({
           tags: res.data,
         });

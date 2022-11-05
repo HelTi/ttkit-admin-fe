@@ -24,7 +24,7 @@ const Model = {
       // 定义自己业务的登录成功条件
       if (response.code === 200) {
         // TODO jwt
-        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('token', `Bearer ${response.data.token}`);
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
         let { redirect } = params;
