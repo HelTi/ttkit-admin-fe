@@ -104,8 +104,8 @@ class WebsitPhoto extends React.PureComponent {
     const that = this;
     const { fileList } = this.state;
     const UploadProps = {
-      name: 'img',
-      action: `${ApiUrl.ManApiUrl}/upload`,
+      name: 'file',
+      action: `${ApiUrl.ManApiUrl}/file/upload`,
       headers: {
         Authorization: localStorage.getItem('token'),
       },
