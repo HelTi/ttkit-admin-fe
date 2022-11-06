@@ -134,13 +134,13 @@ class ArticleAdd extends React.Component {
   addImg($file) {
     console.log($file);
     const formData = new FormData();
-    formData.append('img', $file);
+    formData.append('file', $file);
     uploadFile(formData)
       .then(res => {
         console.log('up', res);
         if (res.code === 200) {
           this.currentPage = 1;
-          const filePath = `${ApiUrl.ManApiUrl}${res.data.path.replace('public', '')}`;
+          const filePath = `${ApiUrl.ManApiUrl}${res.data.filePath.replace('public', '')}`;
           this.$vm.current.$img2Url($file.name, filePath);
         }
       })
