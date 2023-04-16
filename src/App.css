@@ -1,0 +1,23 @@
+body,html{
+  height: 100%;
+  overflow: hidden;
+}
+
+.ant-layout-sider{
+  height: 100%;
+  overflow: auto;
+}
+
+.ant-layout-content{
+  height: calc(100% - 64px);
+  overflow: auto;
+}
+
+.root-header{
+  display: flex;
+  justify-content: space-between;
+}
+
+.root-header-right{
+  cursor: pointer;
+}

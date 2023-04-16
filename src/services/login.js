@@ -1,17 +1,9 @@
-import request from '@/utils/request';
+import request from "@/utils/request";
+import ApiUrl from "@/config/api-url";
 
 export async function userLogin(params) {
-  return request('/auth/login', {
-    method: 'POST',
+  return request(`${ApiUrl.ManApiUrl}/auth/login`, {
+    method: "POST",
     data: params,
-  });
-}
-export async function getFakeCaptcha(mobile) {
-  return request(`/api/login/captcha?mobile=${mobile}`);
-}
-
-export async function userLoginOut() {
-  return request('/loginout', {
-    method: 'GET',
   });
 }

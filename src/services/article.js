@@ -1,14 +1,15 @@
-import request from '@/utils/request';
+import request from "@/utils/request";
 
 export async function queryArticleList({ pageNo = 1, pageSize = 10 } = {}) {
-  return request('/article/pages', {
-    method: 'GET',
+  return request(`/article/pages`, {
+    method: "GET",
     params: {
       pageNo,
       pageSize,
     },
   });
 }
+
 
 export async function fetchTags () {
   return request('/tag', {

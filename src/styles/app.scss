@@ -1,0 +1,30 @@
+#root{
+  height: 100%;
+}
+
+.root-header{
+  background: #fff !important;
+  margin-left: 1px;
+  padding: 0 20px !important;
+}
+
+
+.sidebar-header{
+  height: 64px;
+  line-height: 64px;
+  padding: 0 20px;
+  padding-left: 27px;
+  color: #1677ff;
+
+  .admin-name{
+    margin-left: 10px;
+  }
+}
+
+.ant-layout-sider-collapsed{
+  .sidebar-header{
+    text-align: center;
+    font-size: 22px;
+    color: #1677ff;
+  }
+}
