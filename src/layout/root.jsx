@@ -28,6 +28,7 @@ const items = [
     children: [
       { label: "文件管理", key: "/websit/file" },
       { label: "访客统计", key: "/websit/vistor" },
+      { label: "工具集菜单", key: "/websit/tool-menus" },
     ],
   },
 ];

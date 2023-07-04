@@ -11,3 +11,16 @@ export const replaceHtml = htmlStr => {
   return (text.replace(/ /g, '')).replace(/[\r\n]/g, '');
 };
 
+
+
+export const findArrayChildrenData = (arr=[], idKey)=>{
+  let res = []
+  arr.forEach(item=>{
+    res.push(item.menuCode)
+    if(Array.isArray(item.children)){
+      res.push(...findArrayChildrenData(item.children))
+    }
+  })
+
+  return res
+}

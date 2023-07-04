@@ -10,6 +10,7 @@ const Tags = lazy(() => import("@/views/article/tags"));
 const AddArtile = lazy(() => import("@/views/article/add"));
 const FileAdmin = lazy(()=>import("@/views/website/file"))
 const Visitor = lazy(()=>import("@/views/website/visitor"))
+const ToolMenus = lazy(()=>import('@/views/website/tool-menus'))
 
 export const routes = [
   {
@@ -77,6 +78,15 @@ export const routes = [
           roles: ["admin"],
           title: "访客统计",
           key: "/websit/vistor",
+        },
+      },
+      {
+        path: "/websit/tool-menus",
+        element: <ToolMenus />,
+        meta: {
+          roles: ["admin"],
+          title: "工具集菜单",
+          key: "/websit/tool-menus",
         },
       },
     ],
