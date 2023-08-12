@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import {
-  DownOutlined,
+  DownOutlined, UploadOutlined,
 } from '@ant-design/icons';
-import { Card, Col, Row, Tree, Table, Button, Modal, Form, Input, Cascader, Radio, message, Popconfirm } from 'antd';
+import { Card, Col, Row, Tree, Table, Button, Modal, Form, Input, Cascader, Radio, message, Popconfirm, Upload } from 'antd';
 import { queryCategoryMenus, queryCreateMenu, queryDeleteMenu, queryMenuCategory, queryUpdateMenu } from '@/services/menu';
 import { findArrayChildrenData } from '@/utils/utils';
+import ApiUrl from '@/config/api-url';
+import { getToken } from '@/utils/request';
 
 
 const defaultFormValue = {
@@ -18,6 +20,36 @@ const ToolMenus = () => {
   const [selectCategory, setSelectCategory] = useState(null)
   const [selectMenuCodes, setSelectMenuCodes] = useState([])
   const [currentTreeNode, setCurrentTreeNode] = useState({})
+  const [imageUrl, setImageUrl] = useState('')
+
+  const UploadProps = {
+    name: 'file',
+    action: `${ApiUrl.ManApiUrl}/file/upload`,
+    headers: {
+      Authorization: getToken(),
+    },
+    onChange(info) {
+      if (info.file.status !== 'uploading') {
+        console.log(info.file, info.fileList);
+      }
+      if (info.file.status === 'done') {
+        console.log('done info', info)
+        message.success('上传文件成功！');
+        const url = ApiUrl.ManApiUrl +'/'+ info?.file?.response?.data?.filePath;
+        setImageUrl(url)
+      } else if (info.file.status === 'error') {
+        message.error('上传文件失败');
+      }
+    },
+  };
+
+  const normFile = (e) => {
+    console.log('eeeeee', e)
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return ApiUrl.ManApiUrl +'/'+ e?.file?.response?.data?.filePath;
+  };
 
 
   const columns = [
@@ -67,12 +99,12 @@ const ToolMenus = () => {
         setMenuCategory(data)
       }
     })
- 
+
   }, [])
 
-  useEffect(()=>{
+  useEffect(() => {
     getMenuCategoryMenus(selectMenuCodes)
-  },[selectMenuCodes])
+  }, [selectMenuCodes])
 
   // 获取类目树
   const getMenuCategory = async () => {
@@ -134,12 +166,12 @@ const ToolMenus = () => {
     });
   };
 
-  const onSelect = (selectedKeys,e) => {
-    console.log('selectKeys------e', selectedKeys,e)
-    const {node} = e
+  const onSelect = (selectedKeys, e) => {
+    console.log('selectKeys------e', selectedKeys, e)
+    const { node } = e
     let codes = findArrayChildrenData([node])
     setSelectMenuCodes(codes)
-    console.log('codes',codes)
+    console.log('codes', codes)
     setSelectCategory(selectedKeys[0])
     setCurrentTreeNode(node)
   }
@@ -151,16 +183,16 @@ const ToolMenus = () => {
     })
   }
 
-  const handleEditCategory = ()=>{
+  const handleEditCategory = () => {
     handleEditMenu(currentTreeNode)
   }
 
   const onSelectMenuChange = () => { }
 
-  const confirmDeleteMenuCategory =async (e) => {
+  const confirmDeleteMenuCategory = async (e) => {
     console.log(e);
     const res = await queryDeleteMenu(selectMenuCodes)
-    if(res.code===200){
+    if (res.code === 200) {
       message.success('删除成功！')
       getMenuCategory()
     }
@@ -168,6 +200,10 @@ const ToolMenus = () => {
   const cancel = (e) => {
     message.info('已取消')
   };
+
+  const onValuesChange = (changedValues, allValues) => {
+    console.log('changedValues, allValues', changedValues, allValues)
+  }
 
   return (
     <Card title={'工具集菜单管理'}>
@@ -185,7 +221,7 @@ const ToolMenus = () => {
             >
               <Button danger type="dashed" size='small' disabled={!selectCategory}>删除所选菜单</Button>
             </Popconfirm>
-            <Button onClick={handleEditCategory} style={{marginLeft:10}} type="dashed" size='small' disabled={!selectCategory}>编辑所选菜单</Button>
+            <Button onClick={handleEditCategory} style={{ marginLeft: 10 }} type="dashed" size='small' disabled={!selectCategory}>编辑所选菜单</Button>
           </div>
           <Tree
             showIcon
@@ -218,6 +254,7 @@ const ToolMenus = () => {
                   labelAlign="right"
                   labelWrap
                   initialValues={defaultFormValue}
+                  onValuesChange={onValuesChange}
                 >
 
                   <Form.Item label="是否是菜单类目" name='isMenuCategory'>
@@ -247,11 +284,28 @@ const ToolMenus = () => {
                     <Input disabled={true} placeholder={'菜单编码，自动生成'} />
                   </Form.Item>
                   <Form.Item
-                    name="menuIcon"
                     label="菜单图标"
+                    name='menuIcon'
                     rules={[{ required: false, message: '请输入菜单图标' }]}
+                    getValueFromEvent={normFile}
+                    valuePropName='file'
                   >
-                    <Input />
+                    {/* <Input />
+                    <Button>上传</Button> */}
+                    <Upload {...UploadProps} >
+                      {imageUrl ? (
+                        <img
+                          src={imageUrl}
+                          alt="avatar"
+                          style={{
+                            width: '100%',
+                          }}
+                        />
+                      ) : (
+                        <Button icon={<UploadOutlined />}>上传</Button>
+                      )}
+
+                    </Upload>
                   </Form.Item>
                   <Form.Item
                     name="menuUrl"
