@@ -4,6 +4,7 @@ import Root from "@/layout/root";
 import Login from "@/views/login";
 import ArticleList from "@/views/article/list";
 import NotFound from "@/views/error-pages/404";
+import Ai from "@/views/ai";
 const Home = lazy(() => import("@/views/home"));
 const Article = lazy(() => import("@/views/article"));
 const Tags = lazy(() => import("@/views/article/tags"));
@@ -23,6 +24,15 @@ export const routes = [
           roles: ["admin"],
           title: "admin",
           key: "admin",
+        },
+      },
+      {
+        path: "/ai",
+        element: <Ai />,
+        meta: {
+          roles: ["admin"],
+          title: "Ai",
+          key: "Ai",
         },
       },
       {

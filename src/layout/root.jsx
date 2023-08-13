@@ -12,6 +12,7 @@ const { Header, Sider, Content } = Layout;
 
 const items = [
   { label: "首页", icon: <AppstoreOutlined />, key: "/", path: "/" }, // 菜单项务必填写 key
+  { label: "AI", icon: <AppstoreOutlined />, key: "/ai", path: "/ai" }, // 菜单项务必填写 key
   {
     label: "文章管理",
     key: "artile",
