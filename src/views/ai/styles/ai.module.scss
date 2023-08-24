@@ -1,0 +1,46 @@
+.chatInput{
+  position: relative;
+
+  .sendButton{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+  }
+}
+
+// 历史对话列表
+.historyDialogueList {
+  height: calc(100% - 32px);
+  overflow-y: auto;
+
+}
+
+.userWrapper{
+  display: flex;
+  .userIcon{
+    width: 40px;
+    height: 40px;
+  }
+  .inqueryText{
+    flex: 1;
+  }
+}
+
+.responseWrapper{
+   padding-bottom: 76px;
+   height: 100%;
+   overflow-y: scroll;
+}
+
+.bottomFixed{
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+
+.tabItem{
+  height: 40px;
+  display: flex;
+  align-items: center;
+  text-overflow: ellipsis;
+}

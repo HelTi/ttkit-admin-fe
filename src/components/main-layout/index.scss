@@ -1,0 +1,22 @@
+.main-layout{
+  height: 100%;
+  background: #fff;
+  padding: 10px;
+  border-radius: 5px;
+
+  &-flex {
+    display:flex
+  }
+
+  .main-layout-left{
+    width: 200px;
+    border-right: 1px solid #e3e3e3;
+    padding-right: 10px;
+  }
+
+  &-content {
+    flex: 1 1;
+    position: relative;
+    padding: 10px;
+  }
+}

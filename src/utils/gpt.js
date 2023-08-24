@@ -66,6 +66,13 @@ export class TTSRecorder {
 
   // websocket发送数据
   webSocketSend(text) {
+    const isArray = Array.isArray(text)
+    const textMsg = isArray ? text : [
+      {
+        "role": "user",
+        "content": text
+      }
+    ]
     var params = {
       "header": {
         "app_id": this.appId,
@@ -80,18 +87,14 @@ export class TTSRecorder {
       },
       "payload": {
         "message": {
-          "text": [
-            {
-              "role": "user",
-              "content": text
-            }
-          ]
+          "text": textMsg
         }
       }
     }
     console.log(JSON.stringify(params))
     const readyState = this.ttsWS.readyState
     if (readyState === 1) {
+      this.setStatus(StatusMapConfig.SENDING)
       this.ttsWS.send(JSON.stringify(params))
       // 清空发送的消息
       this.sendCacheText = ''

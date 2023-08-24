@@ -100,7 +100,7 @@ const Root = () => {
         <Content
           style={{
             // margin: "20px 10px",
-            padding: 20,
+            padding: 10,
           }}
         >
           <React.Suspense fallback={<div>loading</div>}>
