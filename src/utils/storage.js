@@ -11,7 +11,7 @@ class Storage {
     window.localStorage.setItem(this.dataKey + key, v);
   }
   remove(key) {
-    window.localStorage.removeItem(key);
+    window.localStorage.removeItem(this.dataKey + key);
   }
 }
 

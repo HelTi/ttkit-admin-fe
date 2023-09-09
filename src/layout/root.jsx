@@ -4,10 +4,10 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   AntDesignOutlined,
-  SettingTwoTone
+  SettingTwoTone,
 } from "@ant-design/icons";
-import { Layout, Menu } from "antd";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Dropdown, Layout, Menu } from "antd";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 const { Header, Sider, Content } = Layout;
 
 const items = [
@@ -39,6 +39,13 @@ const Root = () => {
   const [menuItems, setMenuItems] = useState([]);
   const [menuOpenKeys, setMenuOpenKeys] = useState([]);
 
+  const dropDownItems = [
+    {
+      label: <Link to={'/user/password'}>修改密码</Link>,
+      key: '0',
+    },
+  ]
+
   useEffect(() => {
     setMenuItems(items);
   }, [menuItems]);
@@ -54,6 +61,7 @@ const Root = () => {
     const { key } = e;
     navigate(key);
   };
+
 
   return (
     <Layout style={{ height: "100%" }}>
@@ -82,17 +90,26 @@ const Root = () => {
           className="root-header"
         >
           <div>
-          {React.createElement(
-            collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
-            {
-              className: "trigger",
-              onClick: () => setCollapsed(!collapsed),
-            }
-          )}
+            {React.createElement(
+              collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
+              {
+                className: "trigger",
+                onClick: () => setCollapsed(!collapsed),
+              }
+            )}
           </div>
           <div className="root-header-right">
-              <span className="user-name" style={{marginRight:'8px'}}>Admin</span>
+            <Dropdown
+              menu={{
+                items: dropDownItems
+              }}
+            >
+              <span className="user-name" style={{ marginRight: '8px' }}>Admin</span>
+            </Dropdown>
+
+            <div>
               <SettingTwoTone />
+            </div>
           </div>
 
         </Header>

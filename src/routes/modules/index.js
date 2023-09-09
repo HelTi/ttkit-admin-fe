@@ -10,6 +10,7 @@ const Tags = lazy(() => import("@/views/article/tags"));
 const AddArtile = lazy(() => import("@/views/article/add"));
 const FileAdmin = lazy(()=>import("@/views/website/file"))
 const Visitor = lazy(()=>import("@/views/website/visitor"))
+const Password = lazy(()=>import('@/views/user/password'))
 
 export const routes = [
   {
@@ -79,6 +80,15 @@ export const routes = [
           key: "/websit/vistor",
         },
       },
+      {
+        path: "/user/password",
+        element: <Password />,
+        meta: {
+          roles: ["admin"],
+          title: "修改密码",
+          key: "/user/password",
+        },
+      }
     ],
   },
   {
