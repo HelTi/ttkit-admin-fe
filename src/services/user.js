@@ -24,3 +24,16 @@ export async function queryCurrentUserInfo(params) {
     data: params,
   });
 }
+
+
+/**
+ * 更新密码
+ * @param {*} params 
+ * @returns 
+ */
+ export async function queryUpdateUserInfo(params) {
+  return request(`${ApiUrl.ManApiUrl}/user/update/info`, {
+    method: "POST",
+    data: params,
+  });
+}

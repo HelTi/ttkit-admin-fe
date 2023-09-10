@@ -2,37 +2,53 @@ import { useState, useEffect } from 'react';
 import { Form, Input, Button, Radio } from 'antd';
 import { UploadOutlined, UserOutlined } from '@ant-design/icons';
 import { Upload } from 'antd';
-import { queryCurrentUserInfo } from '@/services/user';
+import { queryCurrentUserInfo, queryUpdateUserInfo } from '@/services/user';
 import ApiUrl from '@/config/api-url';
 import { getToken } from '@/utils/request';
 
 const UserInfoForm = ({ onSubmit }) => {
   const [form] = Form.useForm();
+  const [fileList, setFileList] = useState([])
 
   useEffect(() => {
     async function getUserInfo() {
       const res = await queryCurrentUserInfo()
       console.log('user res', res)
       const { data } = res
-      form.setFieldsValue(data ?? {})
+      if (data) {
+        form.setFieldsValue(data ?? {})
+        // 展示图片
+        const {avatar_url} = data
+        const fileList = [
+          {
+            status: 'done',
+            url: avatar_url,
+          },
+        ]
+
+        setFileList(fileList)
+      }
+
     }
 
     getUserInfo()
   }, [])
 
-  const handleSubmit = (values) => {
+  const handleSubmit = async (values) => {
+    console.log('values---', values)
+    const res = await queryUpdateUserInfo(values)
+    console.log('res', res)
     if (onSubmit) {
       onSubmit(values);
     }
   };
 
   const handleUploadChange = (info) => {
+    setFileList(info.fileList);
     if (info.file.status === 'done') {
-      console.log('info.file.response-----',info.file.response)
-      const {data} = info.file.response
-      if(data?.filePath){
+      const { data } = info.file.response
+      if (data?.filePath) {
         const imgUrl = `${ApiUrl.ManApiUrl}${data.filePath.replace("public", "")}`
-        console.log('imgUrl---',imgUrl)
         form.setFieldsValue({
           avatar_url: imgUrl,
         });
@@ -40,6 +56,14 @@ const UserInfoForm = ({ onSubmit }) => {
 
     }
   };
+
+  const normFile = (e) => {
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return ApiUrl.ManApiUrl + '/' + e?.file?.response?.data?.filePath;
+  };
+
 
   return (
     <Form
@@ -76,12 +100,11 @@ const UserInfoForm = ({ onSubmit }) => {
       <Form.Item
         label="头像"
         name="avatar_url"
-        valuePropName="fileList"
-        getValueFromEvent={e => e.fileList}
+        getValueFromEvent={normFile}
       >
         <Upload
           name="file"
-          action= {`${ApiUrl.ManApiUrl}/file/upload`}
+          action={`${ApiUrl.ManApiUrl}/file/upload`}
           headers={
             {
               Authorization: getToken(),
@@ -90,13 +113,13 @@ const UserInfoForm = ({ onSubmit }) => {
           onChange={handleUploadChange}
           listType="picture-card"
           showUploadList={false}
+          fileList={fileList}
         >
           {form.getFieldValue('avatar_url') ? (
             <img src={form.getFieldValue('avatar_url')} alt="avatar" style={{ width: '100%' }} />
           ) : (
             <Button icon={<UploadOutlined />}></Button>
           )}
-
         </Upload>
       </Form.Item>
 
