@@ -26,6 +26,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "deploy": "sh .deploy/deploy.sh",
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",

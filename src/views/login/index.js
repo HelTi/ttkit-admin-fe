@@ -3,7 +3,7 @@ import { Button, Col, Form, Input, Row } from "antd";
 import { useNavigate } from "react-router-dom";
 import styles from './login.module.scss'
 import { userLogin } from "@/services/login";
-
+import { LockOutlined } from "@ant-design/icons";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -66,7 +66,7 @@ export default function Login() {
                 },
               ]}
             >
-              <Input.Password placeholder="密码" />
+              <Input.Password prefix={<LockOutlined />} placeholder="密码" />
             </Form.Item>
 
             <Form.Item>

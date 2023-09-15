@@ -44,6 +44,10 @@ const Root = () => {
       label: <Link to={'/user/password'}>修改密码</Link>,
       key: '0',
     },
+    {
+      label: <Link to={'/user/info'}>用户信息</Link>,
+      key: '1',
+    },
   ]
 
   useEffect(() => {
