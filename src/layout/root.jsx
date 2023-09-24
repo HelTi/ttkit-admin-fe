@@ -8,6 +8,8 @@ import {
 } from "@ant-design/icons";
 import { Dropdown, Layout, Menu } from "antd";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useUserStore } from "@/store/user";
+import { Avatar } from "antd";
 const { Header, Sider, Content } = Layout;
 
 const items = [
@@ -38,6 +40,8 @@ const Root = () => {
   const navigate = useNavigate();
   const [menuItems, setMenuItems] = useState([]);
   const [menuOpenKeys, setMenuOpenKeys] = useState([]);
+  const initUserInfo = useUserStore((state)=>state.initUserInfo)
+  const userInfo = useUserStore((state)=> state.userInfo)
 
   const dropDownItems = [
     {
@@ -49,7 +53,11 @@ const Root = () => {
       key: '1',
     },
   ]
-
+  
+  //初始化全局状态数据
+  useEffect(()=>{
+    initUserInfo()
+  },[initUserInfo])
   useEffect(() => {
     setMenuItems(items);
   }, [menuItems]);
@@ -61,7 +69,6 @@ const Root = () => {
   }, [location]);
 
   const onClickMenuItem = (e) => {
-    console.log("onClickMenuItem---", e);
     const { key } = e;
     navigate(key);
   };
@@ -103,16 +110,19 @@ const Root = () => {
             )}
           </div>
           <div className="root-header-right">
+            <Avatar src={userInfo?.avatar_url} style={{marginRight:'6px'}} />
             <Dropdown
               menu={{
                 items: dropDownItems
               }}
-            >
-              <span className="user-name" style={{ marginRight: '8px' }}>Admin</span>
+            > 
+              <span className="user-name" style={{ marginRight: '8px' }}>
+                {userInfo?.nick_name}
+              </span>
             </Dropdown>
 
             <div>
-              <SettingTwoTone />
+              <SettingTwoTone/>
             </div>
           </div>
 

@@ -2,19 +2,21 @@ import { useState, useEffect } from 'react';
 import { Form, Input, Button, Radio } from 'antd';
 import { UploadOutlined, UserOutlined } from '@ant-design/icons';
 import { Upload } from 'antd';
-import { queryCurrentUserInfo, queryUpdateUserInfo } from '@/services/user';
 import ApiUrl from '@/config/api-url';
 import { getToken } from '@/utils/request';
+import { message } from 'antd';
+import { useUserStore } from '@/store/user';
 
 const UserInfoForm = ({ onSubmit }) => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState([])
+  const initUserInfo = useUserStore((state)=>state.initUserInfo)
+  const updateUserInfo = useUserStore((state) => state.updateUserInfo)
+
 
   useEffect(() => {
     async function getUserInfo() {
-      const res = await queryCurrentUserInfo()
-      console.log('user res', res)
-      const { data } = res
+      const data = await initUserInfo()
       if (data) {
         form.setFieldsValue(data ?? {})
         // 展示图片
@@ -28,16 +30,16 @@ const UserInfoForm = ({ onSubmit }) => {
 
         setFileList(fileList)
       }
-
     }
 
     getUserInfo()
-  }, [])
+  }, [form, initUserInfo])
 
   const handleSubmit = async (values) => {
     console.log('values---', values)
-    const res = await queryUpdateUserInfo(values)
-    console.log('res', res)
+    const data = await updateUserInfo(values)
+    console.log('data update', data)
+    message.success('更新成功！')
     if (onSubmit) {
       onSubmit(values);
     }
