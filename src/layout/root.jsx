@@ -52,6 +52,10 @@ const Root = () => {
       label: <Link to={'/user/info'}>用户信息</Link>,
       key: '1',
     },
+    {
+      label: <Link to={'/login'}>退出登录</Link>,
+      key: '2',
+    },
   ]
   
   //初始化全局状态数据
