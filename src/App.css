@@ -23,4 +23,5 @@ body,html{
 .root-header-right{
   cursor: pointer;
   display: flex;
+  align-items: center;
 }

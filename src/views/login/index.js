@@ -2,11 +2,22 @@ import storage from "@/utils/storage";
 import { Button, Col, Form, Input, Row } from "antd";
 import { useNavigate } from "react-router-dom";
 import styles from './login.module.scss'
-import { userLogin } from "@/services/login";
+import { fetchCaptcha, userLogin } from "@/services/login";
 import { LockOutlined } from "@ant-design/icons";
+import { useEffect, useState } from "react";
 
 export default function Login() {
+  const [captchaUrl, setCaptchaUrl] = useState('')
   const navigate = useNavigate();
+
+  useEffect(() => {
+    async function getCaptcha() {
+      const res = await fetchCaptcha()
+      setCaptchaUrl(res)
+    }
+    getCaptcha()
+  }, [])
+
   const onFinish = async (values) => {
     const res = await userLogin(values);
 
@@ -21,6 +32,11 @@ export default function Login() {
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
+
+  const refreshCaptcha = async () => {
+    const res = await fetchCaptcha()
+    setCaptchaUrl(res)
+  }
 
   const formItemLayout = {
     labelCol: {
@@ -67,6 +83,23 @@ export default function Login() {
               ]}
             >
               <Input.Password prefix={<LockOutlined />} placeholder="密码" />
+            </Form.Item>
+
+            <Form.Item
+              name="captcha"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Input placeholder="验证码" />
+            </Form.Item>
+            <Form.Item>
+              <div onClick={refreshCaptcha}>
+                <span dangerouslySetInnerHTML={{ __html: captchaUrl }}></span>
+              </div>
+
             </Form.Item>
 
             <Form.Item>
