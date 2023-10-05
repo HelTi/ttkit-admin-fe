@@ -10,6 +10,7 @@ import { Dropdown, Layout, Menu } from "antd";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useUserStore } from "@/store/user";
 import { Avatar } from "antd";
+import { Spin } from "antd";
 const { Header, Sider, Content } = Layout;
 
 const items = [
@@ -137,7 +138,7 @@ const Root = () => {
             padding: 20,
           }}
         >
-          <React.Suspense fallback={<div>loading</div>}>
+          <React.Suspense fallback={ <Spin />}>
             <Outlet />
           </React.Suspense>
         </Content>
