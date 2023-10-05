@@ -9,3 +9,14 @@ export async function uploadFile(formdata) {
     },
   });
 }
+
+// 上传oss文件
+export async function uploadOssFile(formdata) {
+  return request("/oss/upload", {
+    method: "POST",
+    data: formdata,
+    headers: {
+      "Content-type": "multipart/form-data",
+    },
+  });
+}

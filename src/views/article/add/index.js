@@ -5,8 +5,9 @@ import {
   fetchTags,
   updateArticle,
 } from "@/services/article";
-import { uploadFile } from "@/services/upload";
+import { uploadFile, uploadOssFile } from "@/services/upload";
 import { replaceHtml } from "@/utils/utils";
+import { Select } from "antd";
 import { Button, Checkbox, Form, Input, message, Radio } from "antd";
 import Editor from "for-editor";
 import { useEffect, useRef, useState } from "react";
@@ -37,6 +38,18 @@ const AddArtile = () => {
   const editorRef = useRef(null);
   const formRef = useRef(null)
   const uuid = searchParams.get("uuid");
+  const [uploadFileType, setUploadFileType] = useState(2)
+
+  // 切换文件上传类型
+  const handleSelectChange = (value) => {
+    setUploadFileType(value)
+  };
+
+  const fileUploadTypeOptions = [
+    { value: 2, label: 'oss上传' },
+    { value: 1, label: '本地上传' },
+  ]
+
   useEffect(() => {
     fetchTags().then((res) => {
       if (res.code === 200) {
@@ -55,7 +68,7 @@ const AddArtile = () => {
     getArticleDetail();
   }, [uuid]);
 
-  const setArticleDetail = (data)=>{
+  const setArticleDetail = (data) => {
     formRef.current?.setFieldsValue({
       title: data.title,
       selectedTags: data.tags.map(tag => tag.name),
@@ -109,17 +122,31 @@ const AddArtile = () => {
     }
   };
 
+  // 设置文件地址
+  const setFileUlr = (type, filePath = '') => {
+    // oss地址
+    if (type === 2) {
+      return filePath
+    } else {
+      // 本地上传地址
+      return `${ApiUrl.ManApiUrl}${filePath.replace("public", "")}`
+    }
+  }
+  // 上传图片
   const addImg = ($file) => {
     const formData = new FormData();
     formData.append("file", $file);
-    uploadFile(formData)
+    let uploadFun = () => { }
+    if (uploadFileType === 2) {
+      uploadFun = uploadOssFile
+    } else {
+      uploadFun = uploadFile
+    }
+    uploadFun(formData)
       .then((res) => {
         console.log("up", res);
         if (res.code === 200) {
-          const filePath = `${ApiUrl.ManApiUrl}${res.data.filePath.replace(
-            "public",
-            ""
-          )}`;
+          const filePath = setFileUlr(uploadFileType, res?.data?.filePath)
           editorRef.current.$img2Url($file.name, filePath);
         }
       })
@@ -135,7 +162,16 @@ const AddArtile = () => {
         onFinish={onFinish}
         initialValues={defaultFormValue}
         ref={formRef}
+        labelCol={{ span: 2 }}
       >
+        <Form.Item label="图片上传类型">
+          <Select
+            defaultValue={uploadFileType}
+            options={fileUploadTypeOptions}
+            onChange={handleSelectChange}
+          />
+        </Form.Item>
+
         <Form.Item
           label="文章标题"
           name="title"
