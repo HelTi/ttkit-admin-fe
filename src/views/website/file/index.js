@@ -1,13 +1,16 @@
 import ApiUrl from "@/config/api-url";
+import { deleteFile, deleteOssFile } from "@/services/upload";
 import { fetchUploadList } from "@/services/websit";
 import { getToken } from "@/utils/request";
 import { formatDate } from "@/utils/utils";
 import { UploadOutlined } from "@ant-design/icons";
 import { Select } from "antd";
 import { Form } from "antd";
-import { Button, Card, message, Table, Upload } from "antd";
+import { Button, Card, message, Table, Upload, Modal } from "antd";
 import { useEffect, useState } from "react";
 import CopyToClipboard from "react-copy-to-clipboard";
+
+const { confirm } = Modal
 
 export default function FileAdmin() {
   const [tableData, setTableData] = useState([]);
@@ -49,6 +52,7 @@ export default function FileAdmin() {
     },
     {
       title: "预览",
+      with: 100,
       render: (text, record) => (
         <div>
           <img
@@ -61,6 +65,8 @@ export default function FileAdmin() {
     },
     {
       title: "文件路径",
+      with: 500,
+      ellipsis: true,
       render: (text, record) => (
         <CopyToClipboard
           text={setFileUlr(record)}
@@ -79,6 +85,14 @@ export default function FileAdmin() {
       title: "上传时间",
       dataIndex: "upload_date",
       render: (text) => <span>{formatDate(text)}</span>,
+    },
+    {
+      title: '操作',
+      key: 'operation',
+      width: 150,
+      render: (text, record) => <div>
+        <Button onClick={() => handleDeleteFile(record.name, record.type, record._id)}>删除</Button>
+      </div>,
     },
   ];
 
@@ -110,8 +124,8 @@ export default function FileAdmin() {
 
   const UploadProps = {
     name: 'file',
-    maxCount:1,
-    action: uploadFileType===1 ? `${ApiUrl.ManApiUrl}/file/upload`: `${ApiUrl.ManApiUrl}/oss/upload`,
+    maxCount: 1,
+    action: uploadFileType === 1 ? `${ApiUrl.ManApiUrl}/file/upload` : `${ApiUrl.ManApiUrl}/oss/upload`,
     headers: {
       Authorization: getToken(),
     },
@@ -132,6 +146,32 @@ export default function FileAdmin() {
   const handleSelectChange = (value) => {
     setUploadFileType(value)
   };
+
+  const handleDeleteFile = async (fileName, type, fileId) => {
+    console.log('fileName', fileName)
+    confirm({
+      title: "警告！",
+      content: "确定要删除此文章吗？",
+      okText: "确定",
+      okType: "danger",
+      cancelText: "取消",
+      async onOk() {
+        let res = null
+        if (type === 2) {
+          res = await deleteOssFile(fileName, fileId)
+        } else {
+          res = await deleteFile(fileId)
+        }
+        if (res.code === 200) {
+          message.success("删除文件成功！");
+          getTableHandle(paginationConfig)
+        } else {
+          message.error("删除失败");
+        }
+      },
+      onCancel() { },
+    });
+  }
 
   return (
     <Card>
