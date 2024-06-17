@@ -10,6 +10,7 @@ const axiosInstance = axios.create({
   headers: {
     "Content-Type": "application/json;charset=utf-8",
   },
+  withCredentials:true
 });
 
 axiosInstance.interceptors.request.use(

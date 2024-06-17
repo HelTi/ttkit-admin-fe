@@ -32,7 +32,7 @@ export default function ArticleList() {
       render: (text, record) => (
         <>
           <a
-            href={`${ApiUrl.StaticUrl}/article/${record.uuid}`}
+            href={`${ApiUrl.StaticUrl}/article/detail/${record.uuid}`}
             target="_blank"
             rel="noopener noreferrer"
           >

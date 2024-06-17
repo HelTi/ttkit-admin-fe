@@ -16,8 +16,12 @@ body,html{
 .root-header{
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  line-height: normal !important;
 }
 
 .root-header-right{
   cursor: pointer;
+  display: flex;
+  align-items: center;
 }

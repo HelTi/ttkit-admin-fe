@@ -8,9 +8,12 @@ const Home = lazy(() => import("@/views/home"));
 const Article = lazy(() => import("@/views/article"));
 const Tags = lazy(() => import("@/views/article/tags"));
 const AddArtile = lazy(() => import("@/views/article/add"));
-const FileAdmin = lazy(()=>import("@/views/website/file"))
-const Visitor = lazy(()=>import("@/views/website/visitor"))
-const ToolMenus = lazy(()=>import('@/views/website/tool-menus'))
+
+const ToolMenus = lazy(() => import('@/views/website/tool-menus'))
+const FileAdmin = lazy(() => import("@/views/website/file"))
+const Visitor = lazy(() => import("@/views/website/visitor"))
+const Password = lazy(() => import('@/views/user/password'))
+const UserInfo = lazy(() => import('@/views/user/info'))
 
 export const routes = [
   {
@@ -88,7 +91,24 @@ export const routes = [
           title: "工具集菜单",
           key: "/websit/tool-menus",
         },
+      }, {
+        path: "/user/password",
+        element: <Password />,
+        meta: {
+          roles: ["admin"],
+          title: "修改密码",
+          key: "/user/password",
+        },
       },
+      {
+        path: '/user/info',
+        element: <UserInfo />,
+        meta: {
+          roles: ["admin"],
+          title: "用户信息",
+          key: '/user/info'
+        }
+      }
     ],
   },
   {
