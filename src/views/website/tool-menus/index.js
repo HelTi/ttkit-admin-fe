@@ -10,7 +10,7 @@ import { getToken } from '@/utils/request';
 
 
 const defaultFormValue = {
-  isMenuCategory: true,
+  isMenuCategory: false,
 };
 const ToolMenus = () => {
   const [visible, setVisible] = useState(false);
@@ -167,8 +167,9 @@ const ToolMenus = () => {
   };
 
   const onSelect = (selectedKeys, e) => {
-    console.log('selectKeys------e', selectedKeys, e)
+   
     const { node } = e
+    console.log('selectKeys------e--node', selectedKeys, e, node)
     let codes = findArrayChildrenData([node])
     setSelectMenuCodes(codes)
     console.log('codes', codes)
