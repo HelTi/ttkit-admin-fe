@@ -44,4 +44,16 @@ export async function queryDeleteMenu(menuCodes=[]) {
   })
 }
 
+/**
+ * 根据网址获取网站icon 和描述
+ * @param {*} webUrl 
+ * @returns 
+ */
+export async function fetchWebsiteFaviconInfo (webUrl) {
+  return request('/menus/favicon', {
+    method: 'GET',
+    params: { webUrl },
+  })
+}
+
 

@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import {
-  DownOutlined, UploadOutlined,
+  CloseOutlined,
+  DownOutlined, EditOutlined, PlusOutlined, RedoOutlined, UploadOutlined,
 } from '@ant-design/icons';
 import { Card, Col, Row, Tree, Table, Button, Modal, Form, Input, Cascader, Radio, message, Popconfirm, Upload } from 'antd';
-import { queryCategoryMenus, queryCreateMenu, queryDeleteMenu, queryMenuCategory, queryUpdateMenu } from '@/services/menu';
+import { fetchWebsiteFaviconInfo, queryCategoryMenus, queryCreateMenu, queryDeleteMenu, queryMenuCategory, queryUpdateMenu } from '@/services/menu';
 import { findArrayChildrenData } from '@/utils/utils';
 import ApiUrl from '@/config/api-url';
 import { getToken } from '@/utils/request';
-
+import { Tooltip } from 'antd';
 
 const defaultFormValue = {
   isMenuCategory: false,
@@ -19,6 +20,7 @@ const ToolMenus = () => {
   const [categoryMenus, setCategoryMenus] = useState([])
   const [selectCategory, setSelectCategory] = useState(null)
   const [selectMenuCodes, setSelectMenuCodes] = useState([])
+  // 当前点击的tree
   const [currentTreeNode, setCurrentTreeNode] = useState({})
   const [imageUrl, setImageUrl] = useState('')
 
@@ -35,7 +37,7 @@ const ToolMenus = () => {
       if (info.file.status === 'done') {
         console.log('done info', info)
         message.success('上传文件成功！');
-        const url = ApiUrl.ManApiUrl +'/'+ info?.file?.response?.data?.filePath;
+        const url = ApiUrl.ManApiUrl + '/' + info?.file?.response?.data?.filePath;
         setImageUrl(url)
       } else if (info.file.status === 'error') {
         message.error('上传文件失败');
@@ -48,7 +50,7 @@ const ToolMenus = () => {
     if (Array.isArray(e)) {
       return e;
     }
-    return ApiUrl.ManApiUrl +'/'+ e?.file?.response?.data?.filePath;
+    return ApiUrl.ManApiUrl + '/' + e?.file?.response?.data?.filePath;
   };
 
 
@@ -57,6 +59,13 @@ const ToolMenus = () => {
       title: '菜单名称',
       dataIndex: 'menuName',
       key: 'menuName',
+      textWrap: 'word-break',
+    },
+    {
+      title: '备注',
+      dataIndex: 'desc',
+      key: 'desc',
+      width: 200,
     },
     {
       title: '菜单编码',
@@ -72,6 +81,14 @@ const ToolMenus = () => {
       title: '菜单图标',
       dataIndex: 'menuIcon',
       key: 'menuIcon',
+      render: (text) => {
+        return (
+          <div style={{ display: "flex" }}>
+            <img style={{ marginRight: 8 }} width="60px" height="60px" alt={text} src={text} />
+            <p>{text}</p>
+          </div>
+        )
+      }
     },
     {
       title: '菜单URL',
@@ -121,9 +138,40 @@ const ToolMenus = () => {
     setCategoryMenus(data)
   }
 
-  const handleAdd = () => {
+  // 添加网址
+  const handleAddWebsite = () => {
+    if (!currentTreeNode?.menuCode) {
+      message.error('请现选择类目！')
+      return
+    }
     setVisible(true);
+
+    const submitParentMenuCode = [...currentTreeNode?.submitParentMenuCode, currentTreeNode?.key]
+    console.log('submitParentMenuCode ---', submitParentMenuCode)
+    form.setFieldValue('submitParentMenuCode', submitParentMenuCode)
+    form.setFieldValue('isMenuCategory', false)
   };
+
+  // 添加菜单类目
+  const handleAddCategory = () => {
+    if (currentTreeNode?.submitParentMenuCode?.length > 0) {
+      message.warning('最多添加二级类目！')
+      return
+    }
+    setVisible(true);
+    form.setFieldValue('isMenuCategory', true)
+    console.log('currentTreeNode ###-', currentTreeNode)
+    // 设置上级菜单编码
+    if (currentTreeNode?.menuCode) {
+
+      const submitParentMenuCode = [...currentTreeNode?.submitParentMenuCode, currentTreeNode?.key]
+      console.log('submitParentMenuCode ---', submitParentMenuCode)
+
+      form.setFieldValue('submitParentMenuCode', submitParentMenuCode)
+    } else {
+      form.setFieldValue('submitParentMenuCode', [])
+    }
+  }
 
   const handleDelete = async (row) => {
     const { menuCode } = row
@@ -147,6 +195,12 @@ const ToolMenus = () => {
         params.parentMenuCode = params.submitParentMenuCode[length - 1]
       }
       console.log('params', params)
+
+      // 如果不是类目，且没有选择父级类目拒绝保存
+      if (!params.isMenuCategory && !params.parentMenuCode) {
+        message.error('该菜单不是菜单类目,请选择上级菜单编码！')
+        return
+      }
       if (params.menuCode) {
         //  更新
         await queryUpdateMenu(params.menuCode, params)
@@ -166,26 +220,50 @@ const ToolMenus = () => {
     });
   };
 
+  // 关闭弹框
+  const handleCloseModal = () => {
+    form.resetFields();
+    setVisible(false);
+    setImageUrl('')
+  }
+
   const onSelect = (selectedKeys, e) => {
-   
-    const { node } = e
+
+    const { node, selected } = e
     console.log('selectKeys------e--node', selectedKeys, e, node)
     let codes = findArrayChildrenData([node])
     setSelectMenuCodes(codes)
     console.log('codes', codes)
-    setSelectCategory(selectedKeys[0])
-    setCurrentTreeNode(node)
+    // 如果选中了类目
+    if (selected) {
+      setSelectCategory(selectedKeys[0])
+      setCurrentTreeNode(node)
+    } else {
+      setSelectCategory(null)
+      setCurrentTreeNode(null)
+      form.resetFields();
+    }
   }
 
   const handleEditMenu = (record) => {
     setVisible(true);
+    console.log('record  ###', record)
     form.setFieldsValue({
       ...record
     })
+    //设置图片
+    setImageUrl(record?.menuIcon)
   }
 
+  // 编辑类目
   const handleEditCategory = () => {
-    handleEditMenu(currentTreeNode)
+    console.log('handleEditCategory currentTreeNode ###', currentTreeNode)
+    // 填充上级菜单编码	
+    const obj = {
+      ...currentTreeNode,
+      submitParentMenuCode: [...currentTreeNode?.submitParentMenuCode, currentTreeNode?.key]
+    }
+    handleEditMenu(obj)
   }
 
   const onSelectMenuChange = () => { }
@@ -206,6 +284,36 @@ const ToolMenus = () => {
     console.log('changedValues, allValues', changedValues, allValues)
   }
 
+  const onFetchWebsiteInfo = async () => {
+    const menuUrl = form.getFieldValue('menuUrl')
+    console.log('menuUrl', menuUrl)
+    const res = await fetchWebsiteFaviconInfo(menuUrl)
+    const {data} = res
+    console.log(data)
+    const {faviconUrl,description} = data
+    if(faviconUrl){
+     
+      const iconUrl = ApiUrl.ManApiUrl + '/' + faviconUrl
+       form.setFieldValue('menuIcon',iconUrl)
+      setImageUrl(iconUrl)
+    }
+
+    if(description){
+      form.setFieldValue('desc',description)
+    }
+  }
+
+  const MyInput = (props) => (
+    <Row gutter={4}>
+      <Col span={20}>
+        <Input {...props} />
+      </Col>
+      <Col span={4}>
+        <Button onClick={() => onFetchWebsiteInfo()} type="primary" icon={<RedoOutlined />}></Button>
+      </Col>
+    </Row>
+  )
+
   return (
     <Card title={'工具集菜单管理'}>
       <Row>
@@ -220,9 +328,12 @@ const ToolMenus = () => {
               cancelText="No"
               disabled={!selectCategory}
             >
-              <Button danger type="dashed" size='small' disabled={!selectCategory}>删除所选菜单</Button>
+              <Button danger type="dashed" size='small' icon={<CloseOutlined />} disabled={!selectCategory}></Button>
             </Popconfirm>
-            <Button onClick={handleEditCategory} style={{ marginLeft: 10 }} type="dashed" size='small' disabled={!selectCategory}>编辑所选菜单</Button>
+            <Button onClick={handleEditCategory} style={{ marginLeft: 10 }} icon={<EditOutlined />} type="dashed" size='small' disabled={!selectCategory}></Button>
+            <Tooltip placement="top" title={'新增类目'}>
+              <Button onClick={handleAddCategory} style={{ marginLeft: 10 }} icon={<PlusOutlined />} type="dashed" size='small'></Button>
+            </Tooltip>
           </div>
           <Tree
             showIcon
@@ -240,26 +351,26 @@ const ToolMenus = () => {
         <Col span={20}>
           <div style={{ paddingLeft: '10px' }}>
             <div>
-              <Button onClick={handleAdd}>添加菜单</Button>
+              <Button onClick={handleAddWebsite}>添加网址</Button>
               <Table dataSource={categoryMenus} columns={columns} rowKey={(record) => record._id} />
 
               <Modal
                 title="添加菜单"
                 open={visible}
                 onOk={handleSave}
-                onCancel={() => setVisible(false)}
+                onCancel={handleCloseModal}
               >
                 <Form
                   form={form}
-                  labelCol={{ flex: '110px' }}
+                  labelCol={{ flex: '126px' }}
                   labelAlign="right"
                   labelWrap
                   initialValues={defaultFormValue}
                   onValuesChange={onValuesChange}
                 >
 
-                  <Form.Item label="是否是菜单类目" name='isMenuCategory'>
-                    <Radio.Group>
+                  <Form.Item label="是否是菜单类目" name='isMenuCategory' >
+                    <Radio.Group disabled>
                       <Radio value={false}>否</Radio>
                       <Radio value={true}>是</Radio>
                     </Radio.Group>
@@ -278,6 +389,14 @@ const ToolMenus = () => {
                   >
                     <Input />
                   </Form.Item>
+
+                  <Form.Item
+                    name="desc"
+                    label="描述"
+                  >
+                    <Input.TextArea rows={2} placeholder="备注" />
+                  </Form.Item>
+
                   <Form.Item
                     name="menuCode"
                     label="菜单编码"
@@ -299,7 +418,8 @@ const ToolMenus = () => {
                           src={imageUrl}
                           alt="avatar"
                           style={{
-                            width: '100%',
+                            width: 60,
+                            height: 60
                           }}
                         />
                       ) : (
@@ -308,12 +428,13 @@ const ToolMenus = () => {
 
                     </Upload>
                   </Form.Item>
+
                   <Form.Item
                     name="menuUrl"
                     label="菜单URL"
-                    rules={[{ required: false, message: '请输入菜单URL' }]}
+                    rules={[{ required: false, message: '请输入菜单URL' }, { type: 'url' }]}
                   >
-                    <Input />
+                    <MyInput />
                   </Form.Item>
                 </Form>
               </Modal>
