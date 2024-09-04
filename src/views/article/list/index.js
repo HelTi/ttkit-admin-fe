@@ -46,6 +46,15 @@ export default function ArticleList() {
       dataIndex: "author",
     },
     {
+      title: "banner",
+      key: "img_url",
+      render: (text, record) => (
+        <span>
+          <img src= {record?.img_url} style={{width: 95, height:30}} />
+        </span>
+      ),
+    },
+    {
       title: "标签",
       key: "tags",
       render: (text, record) => (

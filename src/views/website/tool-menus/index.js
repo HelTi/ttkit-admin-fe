@@ -288,21 +288,22 @@ const ToolMenus = () => {
     const menuUrl = form.getFieldValue('menuUrl')
     console.log('menuUrl', menuUrl)
     const res = await fetchWebsiteFaviconInfo(menuUrl)
-    const {data} = res
+    const { data } = res
     console.log(data)
-    const {faviconUrl,description} = data
-    if(faviconUrl){
-     
+    const { faviconUrl, description } = data
+    if (faviconUrl) {
+
       const iconUrl = ApiUrl.ManApiUrl + '/' + faviconUrl
-       form.setFieldValue('menuIcon',iconUrl)
+      form.setFieldValue('menuIcon', iconUrl)
       setImageUrl(iconUrl)
     }
 
-    if(description){
-      form.setFieldValue('desc',description)
+    if (description) {
+      form.setFieldValue('desc', description)
     }
   }
 
+  // 网址输入框
   const MyInput = (props) => (
     <Row gutter={4}>
       <Col span={20}>

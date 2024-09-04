@@ -7,12 +7,13 @@ import {
 } from "@/services/article";
 import { uploadFile, uploadOssFile } from "@/services/upload";
 import { replaceHtml } from "@/utils/utils";
-import { Select } from "antd";
+import { Col, Row, Select } from "antd";
 import { Button, Checkbox, Form, Input, message, Radio } from "antd";
 import Editor from "for-editor";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import marked from "./marked";
+import UploadFileButton from "@/components/upload-file-button";
 
 const defaultFormValue = {
   type: 1,
@@ -39,6 +40,7 @@ const AddArtile = () => {
   const formRef = useRef(null)
   const uuid = searchParams.get("uuid");
   const [uploadFileType, setUploadFileType] = useState(2)
+  const [bannerImgUrl, setBannerImgUrl] = useState('')
 
   // 切换文件上传类型
   const handleSelectChange = (value) => {
@@ -76,6 +78,8 @@ const AddArtile = () => {
       type: data.type,
       markdown: data.markdown,
     })
+    // 设置 banner 地址
+    setBannerImgUrl(data?.img_url)
   }
 
   const onFinish = (values) => {
@@ -155,6 +159,31 @@ const AddArtile = () => {
       });
   };
 
+
+//  上传banner 文件成功
+  const uploadBannerFileSuccess = (filePath)=>{
+    console.log('filePath',filePath)
+    const p = `${ApiUrl.ManApiUrl}/${filePath}`
+    setBannerImgUrl(p)
+    formRef.current?.setFieldValue('img_url', p)
+  }
+
+  // 上传 文章banner
+  const UpladArticleBanner = (props) => {
+    console.log('props---', props)
+    return (
+      <Row gutter={4}>
+      <Col>
+         <UploadFileButton uploadSuccess={uploadBannerFileSuccess} />
+      </Col>
+      <Col>
+         <img style={{width:160, height:90}} src={bannerImgUrl} />
+      </Col>
+    </Row>
+    )
+  }
+
+
   return (
     <div>
       <Form
@@ -206,6 +235,10 @@ const AddArtile = () => {
             <Radio value={1}>原创</Radio>
             <Radio value={2}>转载</Radio>
           </Radio.Group>
+        </Form.Item>
+
+        <Form.Item label="文章banner" name={'img_url'}>
+           <UpladArticleBanner />
         </Form.Item>
 
         <Form.Item label="文章内容" name={"markdown"}>
