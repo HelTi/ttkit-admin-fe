@@ -9,6 +9,7 @@ import { findArrayChildrenData } from '@/utils/utils';
 import ApiUrl from '@/config/api-url';
 import { getToken } from '@/utils/request';
 import { Tooltip } from 'antd';
+import JsonReaderModal from '@/components/json-reader-modal';
 
 const defaultFormValue = {
   isMenuCategory: false,
@@ -65,7 +66,13 @@ const ToolMenus = () => {
       title: '备注',
       dataIndex: 'desc',
       key: 'desc',
-      width: 200,
+      render: (text) => {
+        return (
+          <div style={{ maxWidth:200, overflow:"auto" }}>
+            <p>{text}</p>
+          </div>
+        )
+      }
     },
     {
       title: '菜单编码',
@@ -315,8 +322,55 @@ const ToolMenus = () => {
     </Row>
   )
 
+  // 读取 json 内容成功
+  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  const jsonReadeSuccess = async (data = []) => {
+    console.log('json data', data);
+
+    for (const category of data) {
+      const cgParams = {
+        menuName: category.categoryName,
+        isMenuCategory: true,
+      };
+      const { data: dataRes } = await queryCreateMenu(cgParams);
+      const { menuCode } = dataRes;
+
+      for (const c of category.children) {
+        // 等待 200 毫秒
+        await sleep(500);
+        try {
+          // 设置图片
+          const res = await fetchWebsiteFaviconInfo(c.url);
+          const { data } = res;
+          console.log(data);
+
+          const { faviconUrl, description } = data;
+          let iconUrl = ''
+          if (faviconUrl) {
+            iconUrl = ApiUrl.ManApiUrl + '/' + faviconUrl
+          }
+          // 提交
+          const params = {
+            isMenuCategory: false,
+            parentMenuCode: menuCode,
+            menuName: c.name,
+            menuUrl: c.url,
+            menuIcon: iconUrl || '',
+            desc: description || '',
+            submitParentMenuCode: [menuCode],
+          };
+
+          await queryCreateMenu(params);
+        } catch (err) {
+           console.log('err---',err)
+        }
+
+      }
+    }
+  };
   return (
-    <Card title={'工具集菜单管理'}>
+    <Card title={'工具集菜单管理'} extra={<JsonReaderModal success={jsonReadeSuccess} />} >
       <Row>
         <Col span={4} style={{ borderRight: '1px solid #dedede' }}>
           <div style={{ marginBottom: '15px' }}>
