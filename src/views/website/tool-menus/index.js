@@ -61,18 +61,20 @@ const ToolMenus = () => {
       dataIndex: 'menuName',
       key: 'menuName',
       textWrap: 'word-break',
+      ellipsis:true
     },
     {
       title: '备注',
       dataIndex: 'desc',
       key: 'desc',
-      render: (text) => {
-        return (
-          <div style={{ maxWidth:200, overflow:"auto" }}>
-            <p>{text}</p>
-          </div>
-        )
-      }
+      // render: (text) => {
+      //   return (
+      //     <div style={{ maxWidth:200, overflow:"auto" }}>
+      //       <p>{text}</p>
+      //     </div>
+      //   )
+      // },
+      ellipsis:true
     },
     {
       title: '菜单编码',
@@ -90,7 +92,7 @@ const ToolMenus = () => {
       key: 'menuIcon',
       render: (text) => {
         return (
-          <div style={{ display: "flex" }}>
+          <div style={{ display: "flex", maxWidth:200, overflow:"auto" }}>
             <img style={{ marginRight: 8 }} width="60px" height="60px" alt={text} src={text} />
             <p>{text}</p>
           </div>
@@ -101,6 +103,7 @@ const ToolMenus = () => {
       title: '菜单URL',
       dataIndex: 'menuUrl',
       key: 'menuUrl',
+      width:100
     },
     {
       title: '操作',
@@ -187,7 +190,7 @@ const ToolMenus = () => {
     const { code } = res
     if (code === 200) {
       message.info('删除成功！')
-      getMenuCategoryMenus()
+      getMenuCategoryMenus(selectMenuCodes)
     }
   };
 
