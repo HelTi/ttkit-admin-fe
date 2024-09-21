@@ -10,6 +10,7 @@ import ApiUrl from '@/config/api-url';
 import { getToken } from '@/utils/request';
 import { Tooltip } from 'antd';
 import JsonReaderModal from '@/components/json-reader-modal';
+import { InputNumber } from 'antd';
 
 const defaultFormValue = {
   isMenuCategory: false,
@@ -56,6 +57,13 @@ const ToolMenus = () => {
 
 
   const columns = [
+    {
+      title: '排序大小',
+      dataIndex: 'sort_num',
+      key: 'sort_num',
+      textWrap: 'word-break',
+      ellipsis:true
+    },
     {
       title: '菜单名称',
       dataIndex: 'menuName',
@@ -271,7 +279,7 @@ const ToolMenus = () => {
     // 填充上级菜单编码	
     const obj = {
       ...currentTreeNode,
-      submitParentMenuCode: [...currentTreeNode?.submitParentMenuCode, currentTreeNode?.key]
+      submitParentMenuCode: [...currentTreeNode?.submitParentMenuCode]
     }
     handleEditMenu(obj)
   }
@@ -453,6 +461,13 @@ const ToolMenus = () => {
                     label="描述"
                   >
                     <Input.TextArea rows={2} placeholder="备注" />
+                  </Form.Item>
+
+                  <Form.Item
+                    name="sort_num"
+                    label="排序大小"
+                  >
+                    <InputNumber rows={2} placeholder="排序大小" />
                   </Form.Item>
 
                   <Form.Item

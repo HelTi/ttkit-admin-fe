@@ -31,6 +31,10 @@ export default function Visitor() {
 
   const columns = [
     {
+      title: '页面路径',
+      dataIndex: 'route_path',
+    },
+    {
       title: '用户IP',
       dataIndex: 'ip',
     },
