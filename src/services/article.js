@@ -63,3 +63,36 @@ export async function fetchArticleDetail (uuid) {
     params: null,
   })
 }
+
+/**
+ * 获取推荐文章，banner 位
+ */
+export async function fetchRecommendArticles () {
+  return request(`/article/recommend`, {
+    method: 'GET',
+    params: null,
+  })
+}
+
+/**
+ * 编辑推荐文章
+ * @param {*} uuids 
+ * @returns 
+ */
+export async function fetchAddRecommendArticel (uuids) {
+  return request('/article/recommend', {
+    method: 'POST',
+    data: { uuids },
+  })
+}
+
+/**
+ * 删除推荐文章
+ * @param {*} uuid 
+ * @returns 
+ */
+export async function fetchDeleteRecommendArticel (uuid) {
+  return request(`/article/recommend/${uuid}`, {
+    method: 'DELETE',
+  })
+}

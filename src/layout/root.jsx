@@ -22,6 +22,7 @@ const items = [
     children: [
       { label: "文章列表", key: "/article/list" },
       { label: "文章标签", key: "/article/tags" },
+      { label: "文章推荐位", key: "/article/recommend" },
     ],
   },
   {

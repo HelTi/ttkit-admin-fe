@@ -14,6 +14,8 @@ const FileAdmin = lazy(() => import("@/views/website/file"))
 const Visitor = lazy(() => import("@/views/website/visitor"))
 const Password = lazy(() => import('@/views/user/password'))
 const UserInfo = lazy(() => import('@/views/user/info'))
+const RecommendArticle = lazy(() => import('@/views/article/recommend'))
+
 
 export const routes = [
   {
@@ -63,6 +65,15 @@ export const routes = [
           roles: ["admin"],
           title: "添加文章",
           key: "/article/add",
+        },
+      },
+      {
+        path: "/article/recommend",
+        element: <RecommendArticle />,
+        meta: {
+          roles: ["admin"],
+          title: "文章推荐",
+          key: "/article/recommend",
         },
       },
       {
