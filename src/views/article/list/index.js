@@ -1,27 +1,84 @@
 import { deleteArticle, queryArticleList } from "@/services/article";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { formatDate } from "@/utils/utils";
-import { Table, Button, Tag, message,Modal } from "antd";
+import { Table, Button, Tag, message, Modal } from "antd";
 import ApiUrl from "@/config/api-url";
 import { useNavigate } from "react-router-dom";
 
-const {confirm} = Modal
+const { confirm } = Modal;
 
 export default function ArticleList() {
   const navigate = useNavigate();
-  const [articleList, setArtilceList] = useState([]);
+  const [articleList, setArticleList] = useState([]);
   const [tableLoading, setTableLoading] = useState(true);
   const [total, setTotal] = useState(0);
   const [paginationConfig, setPaginationConfig] = useState({
     current: 1,
     pageSize: 10,
     showSizeChanger: true,
-    showTotal: (total) => (
-      <>
-        <p>共{total}条数据</p>
-      </>
-    ),
+    showTotal: (total) => <p>共 {total} 条数据</p>,
   });
+
+  const fetchArticles = useCallback(async () => {
+    setTableLoading(true);
+    const params = {
+      pageNo: paginationConfig.current,
+      pageSize: paginationConfig.pageSize,
+    };
+
+    try {
+      const res = await queryArticleList(params);
+      const { data } = res;
+      if (Array.isArray(data?.data)) {
+        setArticleList(data.data);
+        setTotal(data?.count || 0);
+      } else {
+        message.error("获取文章列表失败");
+      }
+    } catch (error) {
+      message.error("获取文章列表失败，请稍后重试");
+    } finally {
+      setTableLoading(false);
+    }
+  }, [paginationConfig]);
+
+  useEffect(() => {
+    fetchArticles();
+  }, [fetchArticles]);
+
+  const handleTableChange = (pagination) => {
+    setPaginationConfig((prevConfig) => ({
+      ...prevConfig,
+      ...pagination,
+    }));
+  };
+
+  const handleAddArticle = () => navigate("/article/add");
+
+  const handleEditArticle = (uuid) => navigate(`/article/add?uuid=${uuid}`);
+
+  const handleDeleteArticle = (uuid) => {
+    confirm({
+      title: "警告！",
+      content: "确定要删除此文章吗？",
+      okText: "确定",
+      okType: "danger",
+      cancelText: "取消",
+      async onOk() {
+        try {
+          const res = await deleteArticle(uuid);
+          if (res.code === 200) {
+            message.success("删除成功！");
+            fetchArticles();
+          } else {
+            message.error("删除失败");
+          }
+        } catch (error) {
+          message.error("删除文章时发生错误，请稍后重试");
+        }
+      },
+    });
+  };
 
   const columns = [
     {
@@ -30,15 +87,13 @@ export default function ArticleList() {
       width: 200,
       ellipsis: true,
       render: (text, record) => (
-        <>
-          <a
-            href={`${ApiUrl.StaticUrl}/article/detail/${record.uuid}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {text}
-          </a>
-        </>
+        <a
+          href={`${ApiUrl.StaticUrl}/article/detail/${record.uuid}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {text}
+        </a>
       ),
     },
     {
@@ -48,16 +103,18 @@ export default function ArticleList() {
     {
       title: "banner",
       key: "img_url",
-      render: (text, record) => (
-        <span>
-          <img src= {record?.img_url} style={{width: 95, height:30}} />
-        </span>
+      render: (_, record) => (
+        <img
+          src={record?.img_url}
+          alt="banner"
+          style={{ width: 95, height: 30 }}
+        />
       ),
     },
     {
       title: "标签",
       key: "tags",
-      render: (text, record) => (
+      render: (_, record) => (
         <span>
           {record.tags.map((tag) => (
             <Tag key={tag._id}>{tag.name}</Tag>
@@ -68,33 +125,33 @@ export default function ArticleList() {
     {
       title: "阅读量",
       dataIndex: "meta",
-      render: (text) => <span>{text.views}</span>,
+      render: (meta) => <span>{meta.views}</span>,
     },
     {
       title: "创建时间",
       dataIndex: "create_time",
-      render: (text) => <span>{formatDate(text)}</span>,
+      render: (time) => <span>{formatDate(time)}</span>,
     },
     {
       title: "更新时间",
       dataIndex: "update_time",
-      render: (text) => <span>{formatDate(text)}</span>,
+      render: (time) => <span>{formatDate(time)}</span>,
     },
     {
       title: "操作",
       width: 150,
-      render: (text, record) => (
+      render: (_, record) => (
         <div>
           <Button
-            onClick={() => goEditArticle(record.uuid)}
+            onClick={() => handleEditArticle(record.uuid)}
             type="dashed"
             size="small"
-            style={{ marginRight: "8px" }}
+            style={{ marginRight: 8 }}
           >
             编辑
           </Button>
           <Button
-            onClick={() => deleteArticleHandle(record.uuid)}
+            onClick={() => handleDeleteArticle(record.uuid)}
             type="danger"
             size="small"
           >
@@ -105,79 +162,10 @@ export default function ArticleList() {
     },
   ];
 
-  useEffect(() => {
-    const getArticle = async () => {
-      setTableLoading(true);
-      const params = {
-        pageNo: paginationConfig.current,
-        pageSize: paginationConfig.pageSize,
-      };
-      const res = await queryArticleList(params);
-      setTableLoading(false);
-      const { data } = res;
-      if (Array.isArray(data.data)) {
-        setArtilceList(data.data);
-        setTotal(data?.count || 0);
-      }
-    };
-    getArticle();
-  }, [paginationConfig]);
-
-  const getArticleHandle = async ()=>{
-    setTableLoading(true);
-    const params = {
-      pageNo: paginationConfig.current,
-      pageSize: paginationConfig.pageSize,
-    };
-    const res = await queryArticleList(params);
-    setTableLoading(false);
-    const { data } = res;
-    if (Array.isArray(data.data)) {
-      setArtilceList(data.data);
-      setTotal(data?.count || 0);
-    }
-  }
-
-  const handleTableChange = (pagination) => {
-    setPaginationConfig({
-      ...paginationConfig,
-      ...pagination,
-    });
-  };
-
-  const gotoAddArticle = () => {
-    navigate("/article/add");
-  };
-
-  function goEditArticle(uuid) {
-    navigate(`/article/add?uuid=${uuid}`);
-  }
-
-  function deleteArticleHandle(uuid) {
-    confirm({
-      title: "警告！",
-      content: "确定要删除此文章吗？",
-      okText: "确定",
-      okType: "danger",
-      cancelText: "取消",
-      onOk() {
-        deleteArticle(uuid).then((res) => {
-          if (res.code === 200) {
-            message.success("删除成功！");
-            getArticleHandle()
-          } else {
-            message.error("删除失败");
-          }
-        });
-      },
-      onCancel() {},
-    });
-  }
-
   return (
     <div>
       <div className="layout-header">
-        <Button onClick={gotoAddArticle} type="primary">
+        <Button onClick={handleAddArticle} type="primary">
           新增
         </Button>
       </div>
@@ -188,7 +176,7 @@ export default function ArticleList() {
         pagination={{ ...paginationConfig, total }}
         onChange={handleTableChange}
         loading={tableLoading}
-      ></Table>
+      />
     </div>
   );
 }
