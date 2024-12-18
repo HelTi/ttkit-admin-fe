@@ -4,21 +4,26 @@ import { useNavigate } from "react-router-dom";
 import styles from './login.module.scss'
 import { fetchCaptcha, userLogin } from "@/services/login";
 import { LockOutlined } from "@ant-design/icons";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function Login() {
   const [captchaUrl, setCaptchaUrl] = useState('')
+  const [captchaId, setCaptchaId] = useState('')
   const navigate = useNavigate();
 
-  useEffect(() => {
-    async function getCaptcha() {
-      const res = await fetchCaptcha()
-      setCaptchaUrl(res)
-    }
-    getCaptcha()
+  const refreshCaptcha = useCallback(async () => {
+    const res = await fetchCaptcha()
+    setCaptchaUrl(res?.image)
+    setCaptchaId(res?.captchaId)
   }, [])
 
+  useEffect(() => {
+    refreshCaptcha()
+  }, [refreshCaptcha])
+
   const onFinish = async (values) => {
+    // 图形验证码id
+    values.captchaId = captchaId
     const res = await userLogin(values);
 
     if (res?.code === 200) {
@@ -33,10 +38,7 @@ export default function Login() {
     console.log("Failed:", errorInfo);
   };
 
-  const refreshCaptcha = async () => {
-    const res = await fetchCaptcha()
-    setCaptchaUrl(res)
-  }
+
 
   const formItemLayout = {
     labelCol: {
@@ -64,7 +66,7 @@ export default function Login() {
             style={{ padding: "50px 20px" }}
           >
             <Form.Item
-              name="username"
+              name="name"
               rules={[
                 {
                   required: true,
