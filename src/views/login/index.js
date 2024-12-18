@@ -66,7 +66,7 @@ export default function Login() {
             style={{ padding: "50px 20px" }}
           >
             <Form.Item
-              name="username"
+              name="name"
               rules={[
                 {
                   required: true,
