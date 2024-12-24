@@ -37,3 +37,29 @@ export async function queryCurrentUserInfo(params) {
     data: params,
   });
 }
+
+/**
+ * 获取用户列表
+ * @param {*} params 
+ * @returns 
+ */
+export async function queryUserList(params) {
+  return request(`${ApiUrl.ManApiUrl}/user/list`, {
+    method: "GET",
+    data: params,
+  });
+}
+
+/**
+ * 删除用户
+ * @param {*} id 
+ * @returns 
+ */
+export async function queryDelteUserById(id) {
+  return request(`${ApiUrl.ManApiUrl}/user/delete`, {
+    method: "POST",
+    data: {
+      id
+    },
+  });
+}

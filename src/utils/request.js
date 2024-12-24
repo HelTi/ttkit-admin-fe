@@ -3,7 +3,6 @@ import { message } from "antd";
 import ApiUrl from "@/config/api-url";
 import storage from "./storage";
 
-
 const axiosInstance = axios.create({
   timeout: 2000,
   baseURL: ApiUrl.ManApiUrl,
@@ -31,7 +30,6 @@ axiosInstance.interceptors.response.use(
   function (response) {
     // 2xx 范围内的状态码都会触发该函数。
     // 对响应数据做点什么
-    console.log("axios response", response);
     return response.data;
   },
   function (error) {
@@ -43,8 +41,8 @@ axiosInstance.interceptors.response.use(
       message.error('用户无权限！')
       window.location.href = '/login'
     }
-    message.error(error.message)
-    return Promise.reject(error);
+    message.error(response?.data?.message)
+    return Promise.reject(response);
   }
 );
 
