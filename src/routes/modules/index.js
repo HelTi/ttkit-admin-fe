@@ -15,6 +15,7 @@ const Visitor = lazy(() => import("@/views/website/visitor"))
 const Password = lazy(() => import('@/views/user/password'))
 const UserInfo = lazy(() => import('@/views/user/info'))
 const RecommendArticle = lazy(() => import('@/views/article/recommend'))
+const UserManagement = lazy(() => import('@/views/website/user'))
 
 
 export const routes = [
@@ -119,7 +120,16 @@ export const routes = [
           title: "用户信息",
           key: '/user/info'
         }
-      }
+      },
+      {
+        path: '/user/management',
+        element: <UserManagement />,
+        meta: {
+          roles: ["admin"],
+          title: "用户管理",
+          key: '/user/management'
+        }
+      },
     ],
   },
   {
