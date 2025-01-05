@@ -46,7 +46,7 @@ export async function queryCurrentUserInfo(params) {
 export async function queryUserList(params) {
   return request(`${ApiUrl.ManApiUrl}/user/list`, {
     method: "GET",
-    data: params,
+    params: params,
   });
 }
 
