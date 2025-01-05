@@ -3,7 +3,7 @@ name: 部署静态资源
 on:
   push:
     branches:
-      - mater # 当推送到 main 分支时触发部署
+      - master # 当推送到 main 分支时触发部署
 
 jobs:
   build:
