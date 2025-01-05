@@ -1,0 +1,60 @@
+name: 部署静态资源
+
+on:
+  push:
+    branches:
+      - mater # 当推送到 main 分支时触发部署
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      NODE_OPTIONS: "--max-old-space-size=4096"
+
+    steps:
+      - name: 🚚 Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.17.0'
+
+      - name: 📥 安装依赖
+        run: npm install
+
+      - name: ⚙️ 构建资源
+        run: npm run build
+
+      - name: 📦 归档资源
+        run: tar -czf ttkit-admin.tar.gz dist package-lock.json public .env
+
+      - name: 📤 上传资源到 ECS
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.ECS_HOST }}
+          username: ${{ secrets.ECS_USER }}
+          key: ${{ secrets.ECS_SSH_KEY }}
+          source: "ttkit-admin.tar.gz"
+          target: ${{ secrets.ECS_DEPLOY_PATH }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: 🚀 Deploy on ECS
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.ECS_HOST }}
+          username: ${{ secrets.ECS_USER }}
+          key: ${{ secrets.ECS_SSH_KEY }}
+          script: |
+            echo "🛠️ Switching to deployment directory"
+            cd ${{ secrets.ECS_DEPLOY_PATH }}
+            
+            echo "📦 Extracting build artifacts"
+            tar -xzf ttkit-admin.tar.gz
+            
+            echo "✅ Deployment completed successfully"
