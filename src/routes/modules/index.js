@@ -4,6 +4,7 @@ import Root from "@/layout/root";
 import Login from "@/views/login";
 import ArticleList from "@/views/article/list";
 import NotFound from "@/views/error-pages/404";
+import ApiCallHistory from "@/views/website/api-call-history";
 const Home = lazy(() => import("@/views/home"));
 const Article = lazy(() => import("@/views/article"));
 const Tags = lazy(() => import("@/views/article/tags"));
@@ -128,6 +129,15 @@ export const routes = [
           roles: ["admin"],
           title: "用户管理",
           key: '/user/management'
+        }
+      },
+      {
+        path: '/websit/api-call-history',
+        element: <ApiCallHistory />,
+        meta: {
+          roles: ["admin"],
+          title: "接口调用历史",
+          key: '/websit/api-call-history'
         }
       },
     ],

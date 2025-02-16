@@ -174,10 +174,10 @@ const AddArtile = () => {
     return (
       <Row gutter={4}>
       <Col>
-         <UploadFileButton uploadSuccess={uploadBannerFileSuccess} />
+         <UploadFileButton uploadFileType={2} uploadSuccess={uploadBannerFileSuccess} />
       </Col>
       <Col>
-         <img style={{width:160, height:90}} src={bannerImgUrl} />
+         <img alt="图片" style={{width:160, height:90}} src={bannerImgUrl} />
       </Col>
     </Row>
     )

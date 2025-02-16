@@ -34,6 +34,7 @@ const items = [
       { label: "访客统计", key: "/websit/vistor" },
       { label: "工具集菜单", key: "/websit/tool-menus" },
       { label: "用户管理", key: "/user/management" },
+      { label: "接口调用历史", key: "/websit/api-call-history" },
     ],
   },
 ];

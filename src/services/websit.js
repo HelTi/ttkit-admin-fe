@@ -54,3 +54,19 @@ export async function deleteCommentById(_id) {
     },
   });
 }
+
+
+export async function fetchApiCallHistoryList(params = {}) {
+  return request('/stats/history', {
+    method: 'GET',
+    params: params,
+  });
+}
+
+
+export async function fetchApiCallHistoryTopList() {
+  return request('/stats/top-endpoints', {
+    method: 'GET',
+    params: {},
+  });
+}
