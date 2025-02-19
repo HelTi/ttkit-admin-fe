@@ -162,8 +162,7 @@ const AddArtile = () => {
 
 //  上传banner 文件成功
   const uploadBannerFileSuccess = (filePath)=>{
-    console.log('filePath',filePath)
-    const p = `${ApiUrl.ManApiUrl}/${filePath}`
+    const p = uploadFileType ===2 ? filePath : `${ApiUrl.ManApiUrl}/${filePath}`
     setBannerImgUrl(p)
     formRef.current?.setFieldValue('img_url', p)
   }
@@ -174,7 +173,7 @@ const AddArtile = () => {
     return (
       <Row gutter={4}>
       <Col>
-         <UploadFileButton uploadFileType={2} uploadSuccess={uploadBannerFileSuccess} />
+         <UploadFileButton uploadFileType={uploadFileType} uploadSuccess={uploadBannerFileSuccess} />
       </Col>
       <Col>
          <img alt="图片" style={{width:160, height:90}} src={bannerImgUrl} />
