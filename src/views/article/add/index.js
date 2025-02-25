@@ -204,7 +204,7 @@ const AddArtile = () => {
         excerpt: ''
       });
 
-      const response = await fetch(`${ApiUrl.AIServiceUrl}/workflows/generate-article/stream`, {
+      const response = await fetch(`${ApiUrl.ManApiUrl}/ai/generate-article/stream`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
