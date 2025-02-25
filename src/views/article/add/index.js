@@ -1,7 +1,7 @@
 import ApiUrl from "@/config/api-url";
 import {
   addArticle,
-  fetchAiGenerateArticel,
+  addTag,
   fetchArticleDetail,
   fetchTags,
   updateArticle,
@@ -42,6 +42,7 @@ const AddArtile = () => {
   const uuid = searchParams.get("uuid");
   const [uploadFileType, setUploadFileType] = useState(2)
   const [bannerImgUrl, setBannerImgUrl] = useState('')
+  const [generating, setGenerating] = useState(false);
 
   // 切换文件上传类型
   const handleSelectChange = (value) => {
@@ -189,17 +190,112 @@ const AddArtile = () => {
 
   // AI 生成文章
   const GenerateAiArticle = async () => {
-    const params = {
-      "topic": formRef.current?.getFieldValue('title'),
-      "language": "zh",
-      "style": "professional",
+    const title = formRef.current?.getFieldValue('title');
+    if (!title) {
+      message.warning('请先输入文章标题');
+      return;
     }
-    const res = await fetchAiGenerateArticel(params)
-    console.log('res--', res)
-    formRef.current?.setFieldsValue({
-      markdown:res?.content,
-      excerpt: res?.summary
-    })
+
+    try {
+      setGenerating(true);
+      // 初始化内容
+      formRef.current?.setFieldsValue({
+        markdown: '',
+        excerpt: ''
+      });
+
+      const response = await fetch(`${ApiUrl.AIServiceUrl}/workflows/generate-article/stream`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          "topic": title,
+          "language": "zh",
+          "style": "professional",
+        })
+      });
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let content = '';
+      let summary = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        // 处理 SSE 格式的数据
+        const lines = chunk.split('\n').filter(line => line.trim());
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const jsonStr = line.slice(6);
+              const data = JSON.parse(jsonStr);
+
+              if (data.type === 'content') {
+                content += data.content;
+                // 实时更新编辑器内容
+                formRef.current?.setFieldsValue({
+                  markdown: content
+                });
+              }
+
+              if (data.type === 'summary') {
+                summary += data.content;
+                formRef.current?.setFieldsValue({
+                  excerpt: summary
+                });
+              }
+
+              // 标签
+              if(data.type ==='keywords'){
+                const tags = JSON.parse(data.content)
+                if(tags?.length){
+                  AutoAddTags(tags)
+                }
+              }
+            } catch (e) {
+              console.log('Parse chunk error:', e);
+            }
+          }
+        }
+      }
+    } catch (error) {
+      message.error('生成文章失败');
+      console.error('Generate article error:', error);
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  const AutoAddTags = async (aitags = []) => {
+    const needAddTags = aitags.filter(tag => !tags.some(t => t.name === tag));
+
+    if (needAddTags.length === 0) {
+      return
+    }
+
+    try {
+      // 遍历needAddTags 的值，等待接口添加tag
+      await Promise.all(needAddTags.map(tag => addTag(tag)))
+
+      const res = await fetchTags();
+
+      if (res.code === 200) {
+        setTags(res.data)
+        // 自动选中新添加的标签
+        const currentTags = formRef.current?.getFieldValue('selectedTags') || [];
+        formRef.current?.setFieldsValue({
+          selectedTags: [...new Set([...currentTags, ...needAddTags])]
+        });
+      }
+
+    } catch (error) {
+      console.error('自动添加标签失败:', error);
+    }
 
   }
 
@@ -210,91 +306,112 @@ const AddArtile = () => {
         onFinish={onFinish}
         initialValues={defaultFormValue}
         ref={formRef}
-        labelCol={{ span: 2 }}
+        labelCol={{ span: 6 }}
+        wrapperCol={{ span: 18 }}
       >
-        <Form.Item label="图片上传类型">
-          <Select
-            defaultValue={uploadFileType}
-            options={fileUploadTypeOptions}
-            onChange={handleSelectChange}
-          />
-        </Form.Item>
+        <Row gutter={24}>
+          <Col span={10}>
+            {/* 左侧表单项 */}
+            <div style={{ paddingRight: '20px' }}>
+              <Form.Item label="图片上传类型">
+                <Select
+                  defaultValue={uploadFileType}
+                  options={fileUploadTypeOptions}
+                  onChange={handleSelectChange}
+                />
+              </Form.Item>
 
-        <Form.Item
-          label="文章标题"
-          name="title"
-          rules={[
-            {
-              required: true,
-              message: "请输入文章标题",
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
+              <Form.Item
+                label="文章标题"
+                name="title"
+                rules={[
+                  {
+                    required: true,
+                    message: "请输入文章标题",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
 
-        <Form.Item label="文章标签" name={"selectedTags"}>
-          <Checkbox.Group>
-            {tags.map((tag) => (
-              <Checkbox key={tag._id} value={tag.name}>
-                {tag.name}
-              </Checkbox>
-            ))}
-          </Checkbox.Group>
-        </Form.Item>
+              <Form.Item label="文章标签" name={"selectedTags"}>
+                <Checkbox.Group style={{ maxWidth: '100%', display: 'flex', flexWrap: 'wrap' }}>
+                  {tags.map((tag) => (
+                    <Checkbox key={tag._id} value={tag.name} style={{ marginRight: '8px', marginBottom: '8px' }}>
+                      {tag.name}
+                    </Checkbox>
+                  ))}
+                </Checkbox.Group>
+              </Form.Item>
 
-        <Form.Item label="是否公开" name={"private"}>
-          <Radio.Group>
-            <Radio value={0}>公开</Radio>
-            <Radio value={1}>私有</Radio>
-          </Radio.Group>
-        </Form.Item>
-        <Form.Item label="是否原创" name={"type"}>
-          <Radio.Group>
-            <Radio value={1}>原创</Radio>
-            <Radio value={2}>转载</Radio>
-          </Radio.Group>
-        </Form.Item>
+              <Form.Item label="是否公开" name={"private"}>
+                <Radio.Group>
+                  <Radio value={0}>公开</Radio>
+                  <Radio value={1}>私有</Radio>
+                </Radio.Group>
+              </Form.Item>
 
-        <Form.Item label="文章banner" name={'img_url'}>
-          <UpladArticleBanner />
-        </Form.Item>
+              <Form.Item label="是否原创" name={"type"}>
+                <Radio.Group>
+                  <Radio value={1}>原创</Radio>
+                  <Radio value={2}>转载</Radio>
+                </Radio.Group>
+              </Form.Item>
 
-        <Form.Item
-          label="文章简介"
-          name="excerpt"
-          rules={[
-            {
-              required: false,
-              message: "请输入文章简介",
-            },
-          ]}
-        >
-          <Input.TextArea
-            rows={4}
-            placeholder="请输入文章简介"
-            maxLength={200}
-            showCount
-          />
-        </Form.Item>
+              <Form.Item label="文章banner" name={'img_url'}>
+                <UpladArticleBanner />
+              </Form.Item>
 
-        <Form.Item label="文章内容" name={"markdown"}>
-          <Editor
-            height="300px"
-            toolbar={toolbar}
-            ref={editorRef}
-            addImg={addImg}
-          />
-        </Form.Item>
+              <Form.Item
+                label="文章简介"
+                name="excerpt"
+                rules={[
+                  {
+                    required: false,
+                    message: "请输入文章简介",
+                  },
+                ]}
+              >
+                <Input.TextArea
+                  rows={4}
+                  placeholder="请输入文章简介"
+                  maxLength={200}
+                  showCount
+                />
+              </Form.Item>
 
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            保存
-          </Button>
-          <Button type="primary" onClick={() => GenerateAiArticle()}>
-            AI 生成
-          </Button>
-        </Form.Item>
+              <Form.Item wrapperCol={{ offset: 6, span: 18 }}>
+                <Button type="primary" htmlType="submit" style={{ marginRight: '10px' }}>
+                  保存
+                </Button>
+                <Button
+                  type="primary"
+                  onClick={() => GenerateAiArticle()}
+                  loading={generating}
+                  disabled={generating}
+                >
+                  {generating ? '生成中...' : 'AI 生成'}
+                </Button>
+              </Form.Item>
+            </div>
+          </Col>
+
+          <Col span={14}>
+            {/* 右侧编辑器 */}
+            <div style={{ height: 'calc(100vh - 200px)', display: 'flex', flexDirection: 'column' }}>
+              <h3 style={{ margin: '0 0 10px 0' }}>文章内容</h3>
+              <Form.Item name={"markdown"} noStyle>
+                <Editor
+                  height="100%"
+                  toolbar={toolbar}
+                  ref={editorRef}
+                  addImg={addImg}
+                  style={{ flex: 1 }}
+                />
+              </Form.Item>
+            </div>
+          </Col>
+        </Row>
       </Form>
     </div>
   );
