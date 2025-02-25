@@ -4,7 +4,7 @@ import ApiUrl from "@/config/api-url";
 import storage from "./storage";
 
 const axiosInstance = axios.create({
-  timeout: 2000,
+  timeout: 120000,
   baseURL: ApiUrl.ManApiUrl,
   headers: {
     "Content-Type": "application/json;charset=utf-8",

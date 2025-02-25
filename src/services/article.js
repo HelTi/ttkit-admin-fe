@@ -1,3 +1,4 @@
+import ApiUrl from "@/config/api-url";
 import request from "@/utils/request";
 
 export async function queryArticleList({ pageNo = 1, pageSize = 10 } = {}) {
@@ -94,5 +95,14 @@ export async function fetchAddRecommendArticel (uuids) {
 export async function fetchDeleteRecommendArticel (uuid) {
   return request(`/article/recommend/${uuid}`, {
     method: 'DELETE',
+  })
+}
+
+export async function fetchAiGenerateArticel (params={}) {
+  return request(`${ApiUrl.AIServiceUrl}/workflows/article`, {
+    method: 'POST',
+    data: { 
+      ...params
+     },
   })
 }

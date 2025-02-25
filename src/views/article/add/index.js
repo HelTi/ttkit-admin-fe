@@ -1,6 +1,7 @@
 import ApiUrl from "@/config/api-url";
 import {
   addArticle,
+  fetchAiGenerateArticel,
   fetchArticleDetail,
   fetchTags,
   updateArticle,
@@ -77,6 +78,7 @@ const AddArtile = () => {
       private: data.private,
       type: data.type,
       markdown: data.markdown,
+      excerpt: data?.excerpt
     })
     // 设置 banner 地址
     setBannerImgUrl(data?.img_url)
@@ -95,9 +97,12 @@ const AddArtile = () => {
       toc,
     };
     // 文章简介
-    const excerptStr = replaceHtml(content.slice(0, 200));
-    params.excerpt =
-      excerptStr.length > 137 ? `${excerptStr.slice(0, 137)}...` : excerptStr;
+    if (!values.excerpt) {
+      const excerptStr = replaceHtml(content.slice(0, 200));
+      params.excerpt =
+        excerptStr.length > 137 ? `${excerptStr.slice(0, 137)}...` : excerptStr;
+    }
+
 
     requestSubmitHandle(params);
   };
@@ -160,9 +165,9 @@ const AddArtile = () => {
   };
 
 
-//  上传banner 文件成功
-  const uploadBannerFileSuccess = (filePath)=>{
-    const p = uploadFileType ===2 ? filePath : `${ApiUrl.ManApiUrl}/${filePath}`
+  //  上传banner 文件成功
+  const uploadBannerFileSuccess = (filePath) => {
+    const p = uploadFileType === 2 ? filePath : `${ApiUrl.ManApiUrl}/${filePath}`
     setBannerImgUrl(p)
     formRef.current?.setFieldValue('img_url', p)
   }
@@ -172,16 +177,31 @@ const AddArtile = () => {
     console.log('props---', props)
     return (
       <Row gutter={4}>
-      <Col>
-         <UploadFileButton uploadFileType={uploadFileType} uploadSuccess={uploadBannerFileSuccess} />
-      </Col>
-      <Col>
-         <img alt="图片" style={{width:160, height:90}} src={bannerImgUrl} />
-      </Col>
-    </Row>
+        <Col>
+          <UploadFileButton uploadFileType={uploadFileType} uploadSuccess={uploadBannerFileSuccess} />
+        </Col>
+        <Col>
+          <img alt="图片" style={{ width: 160, height: 90 }} src={bannerImgUrl} />
+        </Col>
+      </Row>
     )
   }
 
+  // AI 生成文章
+  const GenerateAiArticle = async () => {
+    const params = {
+      "topic": formRef.current?.getFieldValue('title'),
+      "language": "zh",
+      "style": "professional",
+    }
+    const res = await fetchAiGenerateArticel(params)
+    console.log('res--', res)
+    formRef.current?.setFieldsValue({
+      markdown:res?.content,
+      excerpt: res?.summary
+    })
+
+  }
 
   return (
     <div>
@@ -237,7 +257,25 @@ const AddArtile = () => {
         </Form.Item>
 
         <Form.Item label="文章banner" name={'img_url'}>
-           <UpladArticleBanner />
+          <UpladArticleBanner />
+        </Form.Item>
+
+        <Form.Item
+          label="文章简介"
+          name="excerpt"
+          rules={[
+            {
+              required: false,
+              message: "请输入文章简介",
+            },
+          ]}
+        >
+          <Input.TextArea
+            rows={4}
+            placeholder="请输入文章简介"
+            maxLength={200}
+            showCount
+          />
         </Form.Item>
 
         <Form.Item label="文章内容" name={"markdown"}>
@@ -252,6 +290,9 @@ const AddArtile = () => {
         <Form.Item>
           <Button type="primary" htmlType="submit">
             保存
+          </Button>
+          <Button type="primary" onClick={() => GenerateAiArticle()}>
+            AI 生成
           </Button>
         </Form.Item>
       </Form>
