@@ -15,6 +15,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import marked from "./marked";
 import UploadFileButton from "@/components/upload-file-button";
+import { getToken } from "@/utils/request";
 
 const defaultFormValue = {
   type: 1,
@@ -208,6 +209,7 @@ const AddArtile = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          "Authorization" : getToken(),
         },
         body: JSON.stringify({
           "topic": title,
