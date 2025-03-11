@@ -5,6 +5,7 @@ import Login from "@/views/login";
 import ArticleList from "@/views/article/list";
 import NotFound from "@/views/error-pages/404";
 import ApiCallHistory from "@/views/website/api-call-history";
+import OpenaiPlatform from "@/views/website/openai-platform";
 const Home = lazy(() => import("@/views/home"));
 const Article = lazy(() => import("@/views/article"));
 const Tags = lazy(() => import("@/views/article/tags"));
@@ -140,6 +141,15 @@ export const routes = [
           key: '/websit/api-call-history'
         }
       },
+      {
+        path: '/websit/openai-platform',
+        element: <OpenaiPlatform />,
+        meta: {
+          roles: ["admin"],
+          title: "OpenAI平台",
+          key: '/websit/openai-platform'
+        }
+      }
     ],
   },
   {
