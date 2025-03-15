@@ -39,8 +39,8 @@ const OpenaiPlatform = () => {
     },
     {
       title: '模型唯一标识',
-      dataIndex: 'mode_uuid',
-      key: 'mode_uuid',
+      dataIndex: 'model_uuid',
+      key: 'model_uuid',
       width: 150,
     },
     {
@@ -148,7 +148,7 @@ const OpenaiPlatform = () => {
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
-      values.model_uuid = values.mode_uuid.replace(/^\s+|\s+$/g, '');
+      values.model_uuid = values.model_uuid.replace(/^\s+|\s+$/g, '');
       if (editingRecord) {
         await updatePlatform(editingRecord._id, values);
         message.success('更新成功');
@@ -229,7 +229,7 @@ const OpenaiPlatform = () => {
             </Form.Item>
 
             <Form.Item
-              name="mode_uuid"
+              name="model_uuid"
               label="模型唯一标识"
               rules={[{ required: true, message: '请输入模型唯一标识' }]}
             >
