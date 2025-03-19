@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  Table, Button, Space, Modal, Form, Input, 
-  Switch, message, Card, Row, Col 
+import {
+  Table, Button, Space, Modal, Form, Input,
+  Switch, message, Card, Row, Col
 } from 'antd';
-import { 
-  fetchPlatformList, createPlatform, 
-  updatePlatform, deletePlatform 
+import {
+  fetchPlatformList, createPlatform,
+  updatePlatform, deletePlatform
 } from '@/services/openai-platform';
 
 const OpenaiPlatform = () => {
@@ -44,6 +44,12 @@ const OpenaiPlatform = () => {
       width: 150,
     },
     {
+      title: '公共API key',
+      dataIndex: 'public_api_key',
+      key: 'public_api_key',
+      width: 150,
+    },
+    {
       title: '描述',
       dataIndex: 'description',
       key: 'description',
@@ -76,9 +82,9 @@ const OpenaiPlatform = () => {
           <Button type="link" onClick={() => handleEdit(record)}>
             编辑
           </Button>
-          <Button 
-            type="link" 
-            danger 
+          <Button
+            type="link"
+            danger
             onClick={() => handleDelete(record)}
           >
             删除
@@ -174,8 +180,8 @@ const OpenaiPlatform = () => {
       <Card>
         <Row justify="end" style={{ marginBottom: 16 }}>
           <Col>
-            <Button 
-              type="primary" 
+            <Button
+              type="primary"
               onClick={() => {
                 setEditingRecord(null);
                 form.resetFields();
@@ -236,6 +242,12 @@ const OpenaiPlatform = () => {
               <Input placeholder="请输入模型唯一标识" />
             </Form.Item>
 
+            <Form.Item
+              name="public_api_key"
+              label="公共API key"
+            >
+              <Input placeholder="请输入公共API key" />
+            </Form.Item>
             <Form.Item
               name="description"
               label="描述"
