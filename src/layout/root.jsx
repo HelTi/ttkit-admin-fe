@@ -36,6 +36,7 @@ const items = [
       { label: "用户管理", key: "/user/management" },
       { label: "接口调用历史", key: "/websit/api-call-history" },
       { label: "OpenAI平台", key: "/websit/openai-platform" },
+      { label: "Prompt模板", key: "/websit/prompt-template" },
     ],
   },
 ];

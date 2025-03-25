@@ -18,7 +18,7 @@ const Password = lazy(() => import('@/views/user/password'))
 const UserInfo = lazy(() => import('@/views/user/info'))
 const RecommendArticle = lazy(() => import('@/views/article/recommend'))
 const UserManagement = lazy(() => import('@/views/website/user'))
-
+const PromptTemplate = lazy(() => import('@/views/website/prompt-template'))
 
 export const routes = [
   {
@@ -148,6 +148,15 @@ export const routes = [
           roles: ["admin"],
           title: "OpenAI平台",
           key: '/websit/openai-platform'
+        }
+      },
+      {
+        path: '/websit/prompt-template',
+        element: <PromptTemplate />,
+        meta: {
+          roles: ["admin"],
+          title: "Prompt模板",
+          key: '/websit/prompt-template'
         }
       }
     ],
