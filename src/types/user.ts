@@ -74,6 +74,8 @@ export interface UpdateUserInfoParams {
 export interface UserListParams {
   /** 当前页码 */
   current?: number;
+  /** 当前页码（部分接口使用 pageNo） */
+  pageNo?: number;
   /** 每页条数 */
   pageSize?: number;
   /** 搜索关键词（姓名或邮箱） */
@@ -83,15 +85,19 @@ export interface UserListParams {
 }
 
 /**
- * 用户列表响应数据接口
+ * 用户列表响应数据接口（兼容 list/total 与 data/count 两种后端结构）
  */
 export interface UserListResponse {
   /** 用户列表 */
-  list: UserInfo[];
+  list?: UserInfo[];
+  /** 用户列表（部分接口字段名为 data） */
+  data?: UserInfo[];
   /** 总条数 */
-  total: number;
+  total?: number;
+  /** 总条数（部分接口字段名为 count） */
+  count?: number;
   /** 当前页码 */
-  current: number;
+  current?: number;
   /** 每页条数 */
-  pageSize: number;
+  pageSize?: number;
 }
