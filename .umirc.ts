@@ -100,6 +100,12 @@ export default defineConfig({
           component: './website/prompt-template',
           icon: 'CodeOutlined',
         },
+        {
+          name: '用户管理',
+          path: '/website/user',
+          component: './website/user',
+          icon: 'UserOutlined',
+        },
       ],
     },
     {
